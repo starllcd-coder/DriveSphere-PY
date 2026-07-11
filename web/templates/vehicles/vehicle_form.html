@@ -1,0 +1,62 @@
+{% extends "base/_app_shell.html" %}
+
+{% block heading %}Customers{% endblock %}
+
+{% block content %}
+<div class="ds-page">
+
+  <!-- Filters -->
+  <div class="ds-filters">
+    <input class="ds-input" placeholder="Customer Name">
+    <input class="ds-input" placeholder="Phone">
+    <input class="ds-input" placeholder="ID Number">
+  </div>
+
+  <!-- Docs -->
+  <div class="ds-toolbar">
+    <div class="ds-toolbar__left">
+      <button class="ds-btn">Upload ID / License</button>
+      <button class="ds-btn">View ID / License</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="ds-card">
+    <table class="ds-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>ID Number</th>
+          <th>Address</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for c in customers %}
+        <tr>
+          <td>{{ c.name }}</td>
+          <td>{{ c.phone }}</td>
+          <td>{{ c.id_number }}</td>
+          <td>{{ c.address }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="ds-empty">No customers</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Actions -->
+  <div class="ds-toolbar">
+    <div class="ds-toolbar__left">
+      <button class="ds-btn ds-btn--primary">Add Customer</button>
+      <button class="ds-btn">Edit Customer</button>
+      <button class="ds-btn ds-btn--danger">Delete Customer</button>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

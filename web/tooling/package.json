@@ -1,0 +1,12 @@
+{
+  "name": "drivesphere-web",
+  "private": true,
+  "scripts": {
+    "build": "tailwindcss -i ../static/css/app.css -o ../static/css/app.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0"
+  }
+}

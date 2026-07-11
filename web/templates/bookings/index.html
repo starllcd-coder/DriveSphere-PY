@@ -1,0 +1,69 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}الحجوزات{% else %}Bookings{% endif %}{% endblock %}
+{% block page_subtitle %}{% if request.session.ui_lang == 'ar' %}إدارة الحجوزات وسير العمل{% else %}Manage bookings and rental workflow{% endif %}{% endblock %}
+
+{% block content %}
+{% load permissions_tags %}
+<div class="ds-page" id="ds-bookings"
+  data-can-extend="{% if request.user|has_perm:'bookings.extend' %}1{% else %}0{% endif %}"
+  data-can-return="{% if request.user|has_perm:'bookings.return' %}1{% else %}0{% endif %}"
+  data-can-checkout="{% if request.user|has_perm:'bookings.checkout' %}1{% else %}0{% endif %}">
+
+  <div class="ds-toolbar">
+    <div class="ds-toolbar__left">
+      {% if request.user|has_perm:'bookings.create' %}
+        <a class="ds-btn ds-btn--primary" href="/bookings/new/customer/">{% if request.session.ui_lang == 'ar' %}إضافة حجز جديد{% else %}Add New Booking{% endif %}</a>
+      {% endif %}
+      <button class="ds-btn" id="b-upcoming">{% if request.session.ui_lang == 'ar' %}الحجوزات القادمة{% else %}Upcoming Bookings{% endif %}</button>
+    </div>
+    <div class="ds-toolbar__right">
+      <input class="ds-input" id="b-q" placeholder="{% if request.session.ui_lang == 'ar' %}ابحث بالعميل أو الهاتف أو اللوحة{% else %}Search Customer, Phone, Plate{% endif %}" style="min-width:260px;">
+      <select class="ds-input" id="b-status" style="min-width:180px;">
+        <option value="">{% if request.session.ui_lang == 'ar' %}جميع الحالات{% else %}All Status{% endif %}</option>
+        <option value="CONFIRMED">{% if request.session.ui_lang == 'ar' %}مؤكد{% else %}Confirmed{% endif %}</option>
+        <option value="CHECKED_OUT">{% if request.session.ui_lang == 'ar' %}مسلم{% else %}Checked Out{% endif %}</option>
+        <option value="RETURNED">{% if request.session.ui_lang == 'ar' %}مرتجع{% else %}Returned{% endif %}</option>
+        <option value="UPCOMING">{% if request.session.ui_lang == 'ar' %}قادم{% else %}Upcoming{% endif %}</option>
+        <option value="CANCELLED">{% if request.session.ui_lang == 'ar' %}ملغى{% else %}Cancelled{% endif %}</option>
+        <option value="CLOSED">{% if request.session.ui_lang == 'ar' %}مغلق{% else %}Closed{% endif %}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="ds-card ds-tableWrap">
+    <table class="ds-table">
+      <thead>
+        <tr>
+          <th>{% if request.session.ui_lang == 'ar' %}الرقم{% else %}ID{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}اسم العميل{% else %}Customer Name{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}تاريخ الاستلام{% else %}Pickup Date{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}تاريخ الإرجاع{% else %}Return Date{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}المبلغ الإجمالي{% else %}Total Amount{% endif %}</th>
+          <th class="ds-actions-col">{% if request.session.ui_lang == 'ar' %}الإجراءات{% else %}Actions{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody id="b-body">
+        <tr><td colspan="8" class="ds-empty">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ds-toolbar">
+    <div class="ds-toolbar__left">
+      {% if request.user|has_perm:'bookings.update' %}
+        <button class="ds-btn" id="b-edit" disabled>{% if request.session.ui_lang == 'ar' %}تعديل الحجز{% else %}Edit Booking{% endif %}</button>
+      {% endif %}
+      {% if request.user|has_perm:'bookings.delete' %}
+        <button class="ds-btn ds-btn--danger" id="b-del" disabled>{% if request.session.ui_lang == 'ar' %}حذف الحجز{% else %}Delete Booking{% endif %}</button>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/bookings_live.js" defer></script>
+{% endblock %}

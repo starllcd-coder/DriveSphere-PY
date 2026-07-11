@@ -1,0 +1,172 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}حجز جديد{% else %}New Booking{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page" id="bookingWizard">
+
+  <div class="ds-wizard">
+
+    <div class="ds-wizard__steps">
+      <div class="ds-step is-active" data-step="1">{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</div>
+      <div class="ds-step" data-step="2">{% if request.session.ui_lang == 'ar' %}السائق{% else %}Driver{% endif %}</div>
+      <div class="ds-step" data-step="3">{% if request.session.ui_lang == 'ar' %}التواريخ{% else %}Dates{% endif %}</div>
+      <div class="ds-step" data-step="4">{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</div>
+      <div class="ds-step" data-step="5">{% if request.session.ui_lang == 'ar' %}الإضافات{% else %}Extras{% endif %}</div>
+      <div class="ds-step" data-step="6">{% if request.session.ui_lang == 'ar' %}التسعير{% else %}Pricing{% endif %}</div>
+      <div class="ds-step" data-step="7">{% if request.session.ui_lang == 'ar' %}التوقيع{% else %}Signature{% endif %}</div>
+      <div class="ds-step" data-step="8">{% if request.session.ui_lang == 'ar' %}التسليم{% else %}Handover{% endif %}</div>
+      <div class="ds-step" data-step="9">{% if request.session.ui_lang == 'ar' %}إنهاء{% else %}Finish{% endif %}</div>
+    </div>
+
+    <div class="ds-card ds-card--panel">
+
+      <!-- STEP 1 CUSTOMER -->
+      <section class="ds-wizard__section is-active" data-section="1">
+        <h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</h3>
+
+        <div class="ds-filters">
+          <input class="ds-input" id="custSearch" placeholder="{% if request.session.ui_lang == 'ar' %}ابحث بالعميل{% else %}Search Customer{% endif %}">
+        </div>
+
+        <div class="ds-card ds-tableWrap">
+          <table class="ds-table">
+            <thead>
+              <tr>
+                <th>{% if request.session.ui_lang == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}الهاتف{% else %}Phone{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}الهوية{% else %}ID{% endif %}</th>
+              </tr>
+            </thead>
+            <tbody id="custResults"></tbody>
+          </table>
+        </div>
+
+        <div class="ds-formGrid">
+          <input class="ds-input" id="custName" placeholder="{% if request.session.ui_lang == 'ar' %}الاسم{% else %}Name{% endif %}">
+          <input class="ds-input" id="custPhone" placeholder="{% if request.session.ui_lang == 'ar' %}الهاتف{% else %}Phone{% endif %}">
+          <input class="ds-input" id="custId" placeholder="{% if request.session.ui_lang == 'ar' %}الهوية{% else %}ID{% endif %}">
+        </div>
+
+        <div class="ds-wizard__actions">
+          <button class="ds-btn ds-btn--primary" data-next>{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+        </div>
+      </section>
+
+      <!-- STEP 3 DATES -->
+      <section class="ds-wizard__section" data-section="3">
+        <h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}تواريخ الإيجار{% else %}Rental Dates{% endif %}</h3>
+
+        <div class="ds-formGrid">
+          <input type="date" class="ds-input" id="pickupDate">
+          <input type="date" class="ds-input" id="returnDate">
+        </div>
+
+        <div class="ds-wizard__actions">
+          <button class="ds-btn" data-back>{% if request.session.ui_lang == 'ar' %}السابق{% else %}Back{% endif %}</button>
+          <button class="ds-btn ds-btn--primary" data-next>{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+        </div>
+      </section>
+
+      <!-- STEP 4 VEHICLES -->
+      <section class="ds-wizard__section" data-section="4">
+        <h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}المركبات المتاحة{% else %}Available Vehicles{% endif %}</h3>
+
+        <div class="ds-card ds-tableWrap">
+          <table class="ds-table">
+            <thead>
+              <tr><th>Vehicle</th><th>Plate</th><th>Rate</th><th></th></tr>
+            </thead>
+            <tbody id="vehicleResults"></tbody>
+          </table>
+        </div>
+
+        <div class="ds-wizard__actions">
+          <button class="ds-btn" data-back>{% if request.session.ui_lang == 'ar' %}السابق{% else %}Back{% endif %}</button>
+          <button class="ds-btn ds-btn--primary" data-next>{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+        </div>
+      </section>
+
+      <!-- STEP 5 EXTRAS -->
+      <section class="ds-wizard__section" data-section="5">
+        <h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}الإضافات{% else %}Extras{% endif %}</h3>
+
+        <div class="ds-extraRow">
+          <label><input type="checkbox" class="extra" data-price="2"> {% if request.session.ui_lang == 'ar' %}مقعد طفل{% else %}Baby Seat{% endif %}</label>
+        </div>
+        <div class="ds-extraRow">
+          <label><input type="checkbox" class="extra" data-price="1"> {% if request.session.ui_lang == 'ar' %}نظام تحديد المواقع{% else %}GPS{% endif %}</label>
+        </div>
+        <div class="ds-extraRow">
+          <label><input type="checkbox" class="extra" data-price="3"> {% if request.session.ui_lang == 'ar' %}واي فاي{% else %}WiFi{% endif %}</label>
+        </div>
+
+        <div class="ds-totalBar">
+          {% if request.session.ui_lang == 'ar' %}إجمالي الإضافات:{% else %}Total Extras:{% endif %} <span id="extrasTotal">0</span>
+        </div>
+
+        <div class="ds-wizard__actions">
+          <button class="ds-btn" data-back>{% if request.session.ui_lang == 'ar' %}السابق{% else %}Back{% endif %}</button>
+          <button class="ds-btn ds-btn--primary" data-next>{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+        </div>
+      </section>
+
+      <!-- STEP 6 PRICING -->
+      <section class="ds-wizard__section" data-section="6">
+        <h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}التسعير{% else %}Pricing{% endif %}</h3>
+
+        <div class="ds-summary">
+          <div>Days: <span id="sumDays"></span></div>
+          <div>Rate: <span id="sumRate"></span></div>
+          <div>Extras: <span id="sumExtras"></span></div>
+          <div>Total: <b id="sumTotal"></b></div>
+        </div>
+
+        <div class="ds-wizard__actions">
+          <button class="ds-btn" data-back>{% if request.session.ui_lang == 'ar' %}السابق{% else %}Back{% endif %}</button>
+          <button class="ds-btn ds-btn--primary" data-next>{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+        </div>
+      </section>
+
+      <!-- STEP 7 SIGN -->
+      <section class="ds-wizard__section" data-section="7">
+        <h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}التوقيع{% else %}Signature{% endif %}</h3>
+
+        <canvas id="signCanvas" class="ds-sign__canvas"></canvas>
+        <button class="ds-btn ds-btn--small" id="clearSign">Clear</button>
+
+        <div class="ds-wizard__actions">
+          <button class="ds-btn" data-back>{% if request.session.ui_lang == 'ar' %}السابق{% else %}Back{% endif %}</button>
+          <button class="ds-btn ds-btn--primary" data-next>{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+        </div>
+      </section>
+
+      <!-- STEP 8 HANDOVER -->
+      <section class="ds-wizard__section" data-section="8">
+        <h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}التسليم{% else %}Handover{% endif %}</h3>
+
+        <div class="ds-formGrid">
+          <input class="ds-input" id="odoOut" placeholder="Odometer Out">
+          <input class="ds-input" id="fuelOut" placeholder="Fuel %">
+        </div>
+
+        <div class="ds-wizard__actions">
+          <button class="ds-btn" data-back>{% if request.session.ui_lang == 'ar' %}السابق{% else %}Back{% endif %}</button>
+          <button class="ds-btn ds-btn--primary" id="finishBooking">{% if request.session.ui_lang == 'ar' %}إنهاء{% else %}Finish{% endif %}</button>
+        </div>
+      </section>
+
+      <!-- STEP 9 DONE -->
+      <section class="ds-wizard__section" data-section="9">
+        <h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}تم إنشاء الحجز{% else %}Booking Created{% endif %}</h3>
+        <div class="ds-text">{% if request.session.ui_lang == 'ar' %}تم حفظ الحجز بنجاح.{% else %}Booking saved successfully.{% endif %}</div>
+        <a href="/bookings/" class="ds-btn ds-btn--primary">{% if request.session.ui_lang == 'ar' %}العودة إلى الحجوزات{% else %}Back to Bookings{% endif %}</a>
+      </section>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/booking_wizard_api.js" defer></script>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base/_app_shell.html" %}
+
+{% block heading %}Dashboard{% endblock %}
+{% block page_subtitle %}Performance overview and key metrics{% endblock %}
+
+{% block content %}
+<div class="ds-page" id="ds-dashboard">
+
+  <div class="ds-grid ds-grid--kpis" id="dash-kpis">
+    {% include "dashboard/partials/_kpi_card.html" with icon="📅" title="Bookings" value=kpis.total_bookings hint="Selected Period" trend=None %}
+    {% include "dashboard/partials/_kpi_card.html" with icon="👥" title="Active Customers" value=kpis.active_customers hint="Active" trend=None %}
+    {% include "dashboard/partials/_kpi_card.html" with icon="🚗" title="Fleet Vehicles" value=kpis.fleet_vehicles hint="Total" trend=None %}
+    {% include "dashboard/partials/_kpi_card.html" with icon="💰" title="Net Revenue" value=kpis.earnings|floatformat:3 hint="Selected Period" trend=None money=True currency=ds_business.currency_symbol|default:ds_business.currency_code %}
+  </div>
+
+  <div class="ds-grid ds-grid--dashboard">
+
+    <section class="ds-card ds-card--panel" id="dash-overview">
+      <div class="ds-card__head">
+        <div class="ds-card__title">Overview</div>
+        <div class="ds-card__actions">
+          <button class="ds-chip is-active" type="button" data-period="today">Today</button>
+          <button class="ds-chip" type="button" data-period="weekly">Weekly</button>
+          <button class="ds-chip" type="button" data-period="monthly">Monthly</button>
+        </div>
+      </div>
+
+      <div class="ds-card__body">
+        <div class="ds-miniKpis" id="dash-mini">
+          <div class="ds-miniKpi"><div class="ds-miniKpi__label">Active Rentals</div><div class="ds-miniKpi__value">—</div></div>
+          <div class="ds-miniKpi"><div class="ds-miniKpi__label">Upcoming</div><div class="ds-miniKpi__value">—</div></div>
+          <div class="ds-miniKpi"><div class="ds-miniKpi__label">Overdue</div><div class="ds-miniKpi__value">—</div></div>
+          <div class="ds-miniKpi"><div class="ds-miniKpi__label">Maintenance Open</div><div class="ds-miniKpi__value">—</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ds-card ds-card--panel" id="dash-recent-bookings">
+      <div class="ds-card__head">
+        <div class="ds-card__title">Recent Reservations</div>
+        <a class="ds-link" href="/bookings/">View All</a>
+      </div>
+
+      <div class="ds-card__body ds-tableWrap">
+        <table class="ds-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Vehicle</th>
+              <th>Pickup</th>
+              <th>Return</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="dash-bookings-body">
+            <tr><td colspan="5" class="ds-empty">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ds-card ds-card--panel" id="dash-recent-payments">
+      <div class="ds-card__head">
+        <div class="ds-card__title">Recent Payments</div>
+        <a class="ds-link" href="/payments/">View All</a>
+      </div>
+
+      <div class="ds-card__body" id="dash-payments-body">
+        <div class="ds-empty">Loading…</div>
+      </div>
+    </section>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/dashboard_live.js" defer></script>
+{% endblock %}

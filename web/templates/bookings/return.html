@@ -1,0 +1,187 @@
+﻿{% extends "base/_app_shell.html" %}
+
+{% block heading %}{% if request.session.ui_lang == 'ar' %}إتمام الإرجاع{% else %}Finalize Return{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page" id="ds-booking-return"
+  data-booking-id="{{ booking.id }}"
+  data-rate-per-km="{{ booking.rate_per_extra_km }}"
+  data-deposit="{{ booking.deposit_amount }}"
+  data-total="{{ booking.total_amount }}"
+  data-already-paid="{{ already_paid|default:'0' }}"
+  data-daily-rate="{{ booking.daily_rate }}"
+  data-extras-total="{{ booking.extras_total }}"
+  data-vat-rate="{{ booking.vat_rate }}"
+  data-included-km-per-day="{{ booking.included_km_per_day|default:200 }}"
+  data-days="{{ booking.days }}"
+  data-pickup-date="{{ booking.pickup_date|date:'Y-m-d' }}"
+  data-planned-return-date="{{ booking.return_date|date:'Y-m-d' }}">
+
+  <div class="ds-card ds-card--panel">
+    <div class="ds-card__head">
+      <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}تفاصيل الإرجاع{% else %}Return Details{% endif %}</div>
+    </div>
+
+    <div class="ds-formGrid">
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}اسم الفاحص{% else %}Inspector Name{% endif %}</label>
+        <input class="ds-input" id="r-inspector-name" value="{{ request.user.get_full_name|default:request.user.email }}">
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}تاريخ ووقت الإرجاع{% else %}Return Timestamp{% endif %}</label>
+        <input class="ds-input" value="{{ now|date:'Y-m-d H:i' }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</label>
+        <input class="ds-input" value="{{ booking.customer.name }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</label>
+        <input class="ds-input" value="{{ booking.vehicle.brand.name }} {{ booking.vehicle.model.name }} {{ booking.vehicle.plate_number }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}تاريخ الإرجاع الفعلي{% else %}Actual Return Date{% endif %}</label>
+        <input class="ds-input" id="r-date" type="date" value="{{ today|date:'Y-m-d' }}">
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}نسبة الوقود عند الإرجاع{% else %}Fuel Return %{% endif %}</label>
+        <input class="ds-input" id="r-fuel" value="100">
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}عداد البداية (كم){% else %}Starting Odometer (Km){% endif %}</label>
+        <input class="ds-input" id="r-odo-out" value="{{ booking.handover.odometer_out_km|default:'0' }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}عداد الإرجاع (كم){% else %}Odometer In (Km){% endif %}</label>
+        <input class="ds-input" id="r-odo" value="0">
+      </div>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <div class="ds-formGrid">
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}المسافة الزائدة (كم){% else %}Extra Mileage (Km){% endif %}</label>
+        <input class="ds-input" id="r-extra-km" value="0">
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الكيلومترات المضمنة (تقديري){% else %}Included Km (Estimate){% endif %}</label>
+        <input class="ds-input" id="r-included-km" value="0" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}سعر لكل كم{% else %}Rate Per Km{% endif %}</label>
+        <input class="ds-input" id="r-rate" value="{{ booking.rate_per_extra_km }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رسوم الكيلومترات الزائدة{% else %}Extra Km Charge{% endif %}</label>
+        <input class="ds-input" id="r-extra-charge" value="0" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رسوم الوقود{% else %}Fuel Charge{% endif %}</label>
+        <input class="ds-input" id="r-fuel-charge" value="0">
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رسوم التأخير{% else %}Late Fee{% endif %}</label>
+        <input class="ds-input" id="r-late-fee" value="0">
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رسوم الأضرار{% else %}Damage Fee{% endif %}</label>
+        <input class="ds-input" id="r-damage-fee" value="0">
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رسوم أخرى{% else %}Other Fee{% endif %}</label>
+        <input class="ds-input" id="r-other-fee" value="0">
+      </div>
+    </div>
+
+    <div class="ds-formGrid" style="margin-top:12px;">
+      <div class="ds-field" style="grid-column:1/-1;">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}تفاصيل الأضرار{% else %}Damage Details{% endif %}</label>
+        <textarea class="ds-input" id="r-damage" rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}توقيع الفاحص{% else %}Inspector Signature{% endif %}</label>
+      <canvas id="returnSignature" class="ds-sign__canvas"></canvas>
+      <button type="button" class="ds-btn ds-btn--small" id="returnSignatureClear">{% if request.session.ui_lang == 'ar' %}مسح{% else %}Clear{% endif %}</button>
+      <input type="hidden" id="returnSignatureData">
+    </div>
+
+    <div class="ds-divider"></div>
+
+    <div class="ds-card" id="r-photos">
+      <div class="ds-card__head">
+        <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}مرفقات صور الأضرار (اختياري){% else %}Damage Photo Attachments (Optional){% endif %}</div>
+      </div>
+      <div class="ds-card__body">
+        <div class="ds-row" style="gap:10px; align-items:center;">
+          <input class="ds-input" id="r-photo-files" type="file" multiple accept="image/*">
+          <button class="ds-btn" id="r-photo-upload">{% if request.session.ui_lang == 'ar' %}رفع{% else %}Upload{% endif %}</button>
+        </div>
+        <div class="ds-photoGrid" id="r-photo-grid"></div>
+      </div>
+    </div>
+
+    <div class="ds-card" style="margin-top:12px;">
+      <div class="ds-card__head">
+        <div class="ds-card__title">Summary</div>
+      </div>
+      <div class="ds-card__body">
+        <div class="ds-summary">
+          <div>{% if request.session.ui_lang == 'ar' %}الإجمالي الأصلي:{% else %}Original Total:{% endif %} <b>{{ booking.total_amount }}</b></div>
+          <div>{% if request.session.ui_lang == 'ar' %}?????? ????? ????:{% else %}Early Return Credit:{% endif %} <b id="r-early-credit">0.000</b></div>
+          <div>{% if request.session.ui_lang == 'ar' %}الإضافات:{% else %}Additions:{% endif %} <b id="r-additions">0.000</b></div>
+          <div>{% if request.session.ui_lang == 'ar' %}????? ??????:{% else %}Already Paid:{% endif %} <b id="r-already-paid">{{ already_paid|default:'0.000' }}</b></div>
+          <div>{% if request.session.ui_lang == 'ar' %}الوديعة:{% else %}Deposit:{% endif %} <b>{{ booking.deposit_amount }}</b></div>
+          <div>{% if request.session.ui_lang == 'ar' %}?????? ???????:{% else %}Balance Due:{% endif %} <b id="r-final">0.000</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-card" style="margin-top:12px;">
+      <div class="ds-card__head">
+        <div class="ds-card__title">Payment</div>
+      </div>
+      <div class="ds-card__body">
+        <div class="ds-formGrid">
+          <div class="ds-field">
+            <label class="ds-label">{% if request.session.ui_lang == 'ar' %}المبلغ المحصل{% else %}Collected Amount{% endif %}</label>
+            <input class="ds-input" id="r-payment-amount" value="">
+          </div>
+          <div class="ds-field">
+            <label class="ds-label">{% if request.session.ui_lang == 'ar' %}طريقة الدفع{% else %}Payment Method{% endif %}</label>
+            <select class="ds-input" id="r-payment-method">
+              <option value="CASH">{% if request.session.ui_lang == 'ar' %}نقداً{% else %}Cash{% endif %}</option>
+              <option value="CARD">{% if request.session.ui_lang == 'ar' %}بطاقة{% else %}Card{% endif %}</option>
+              <option value="BANK_TRANSFER">{% if request.session.ui_lang == 'ar' %}تحويل بنكي{% else %}Bank Transfer{% endif %}</option>
+              <option value="OTHER">{% if request.session.ui_lang == 'ar' %}أخرى{% else %}Other{% endif %}</option>
+            </select>
+          </div>
+          <div class="ds-field" style="grid-column:1/-1;">
+            <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ملاحظات الدفع{% else %}Payment Notes{% endif %}</label>
+            <input class="ds-input" id="r-payment-notes" value="">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-wizard__actions" style="margin-top:12px;">
+      <a class="ds-btn" href="/bookings/">{% if request.session.ui_lang == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+      <button class="ds-btn" id="r-report">{% if request.session.ui_lang == 'ar' %}تقرير الإرجاع{% else %}Return Report{% endif %}</button>
+      <button class="ds-btn ds-btn--primary" id="r-submit">{% if request.session.ui_lang == 'ar' %}حفظ و طباعة الفاتورة{% else %}Save And Print Invoice{% endif %}</button>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/wizard_signature.js" defer></script>
+<script src="/static/js/booking_return.js" defer></script>
+{% endblock %}
+
+
+

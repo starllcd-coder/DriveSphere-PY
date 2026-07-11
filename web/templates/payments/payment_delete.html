@@ -1,0 +1,25 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}حذف الدفع{% else %}Delete Payment{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page">
+  <div class="ds-card ds-card--wide">
+    <div class="ds-card__head">
+      <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}حذف الدفع{% else %}Delete Payment{% endif %}</div>
+      <a class="ds-btn ds-btn--ghost" href="/payments/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    </div>
+
+    <div class="ds-alert ds-alert--danger">
+      {% if request.session.ui_lang == 'ar' %}هل أنت متأكد أنك تريد إلغاء الدفع <b>{{ payment.receipt_number }}</b>?{% else %}Are you sure you want to void payment <b>{{ payment.receipt_number }}</b>?{% endif %}
+    </div>
+
+    <form method="post" style="margin-top:14px;">
+      {% csrf_token %}
+      <div class="ds-wizard__actions">
+        <a class="ds-btn ds-btn--ghost" href="/payments/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+        <button class="ds-btn ds-btn--dark" type="submit">{% if request.session.ui_lang == 'ar' %}تأكيد الحذف{% else %}Confirm Delete{% endif %}</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

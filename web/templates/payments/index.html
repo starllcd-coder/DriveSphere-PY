@@ -1,0 +1,73 @@
+{% extends "base/_app_shell.html" %}
+{% load permissions_tags %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}المدفوعات{% else %}Payments{% endif %}{% endblock %}
+{% block page_subtitle %}{% if request.session.ui_lang == 'ar' %}تتبع المدفوعات، الاسترداد، والإيصالات{% else %}Track payments, refunds, and receipts{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page" id="ds-payments">
+
+  <div class="ds-filters">
+    <input class="ds-input" id="p-booking" placeholder="{% if request.session.ui_lang == 'ar' %}معرف الحجز{% else %}Booking ID{% endif %}">
+    <input class="ds-input" id="p-customer" placeholder="{% if request.session.ui_lang == 'ar' %}اسم العميل{% else %}Customer Name{% endif %}">
+    <input class="ds-input" id="p-from" type="date" placeholder="{% if request.session.ui_lang == 'ar' %}من التاريخ{% else %}Date From{% endif %}">
+    <input class="ds-input" id="p-to" type="date" placeholder="{% if request.session.ui_lang == 'ar' %}إلى التاريخ{% else %}Date To{% endif %}">
+    <select class="ds-input" id="p-method">
+      <option value="">{% if request.session.ui_lang == 'ar' %}الطريقة{% else %}Method{% endif %}</option>
+      <option value="CASH">{% if request.session.ui_lang == 'ar' %}نقداً{% else %}CASH{% endif %}</option>
+      <option value="CARD">{% if request.session.ui_lang == 'ar' %}بطاقة{% else %}CARD{% endif %}</option>
+      <option value="BANK_TRANSFER">{% if request.session.ui_lang == 'ar' %}تحويل بنكي{% else %}BANK{% endif %}</option>
+    </select>
+  </div>
+
+    <div class="ds-toolbar">
+      <div class="ds-toolbar__left">
+      {% if request.user|has_perm:'payments.create' %}
+        <button class="ds-btn ds-btn--primary" id="p-new">{% if request.session.ui_lang == 'ar' %}مدفوعات جديدة{% else %}New Payment{% endif %}</button>
+      {% endif %}
+      {% if request.user|has_perm:'payments.refund' %}
+        <button class="ds-btn" id="p-refund">{% if request.session.ui_lang == 'ar' %}استرداد{% else %}Refund{% endif %}</button>
+      {% endif %}
+    </div>
+    <div class="ds-toolbar__right">
+      {% if request.user|has_perm:'payments.view' %}
+        <a class="ds-btn ds-btn--export" href="/print/payments/report/" target="_blank">{% if request.session.ui_lang == 'ar' %}تصدير تقرير المدفوعات{% else %}Export Payment Report{% endif %}</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="ds-card ds-tableWrap" id="p-tableCard">
+    <table class="ds-table">
+      <thead>
+        <tr>
+          <th>{% if request.session.ui_lang == 'ar' %}التاريخ{% else %}Date{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الإيصال{% else %}Receipt{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}معرف الحجز{% else %}Booking ID{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الطريقة{% else %}Method{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}المبلغ{% else %}Amount{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody id="p-body">
+        <tr><td colspan="8" class="ds-empty">{% if request.session.ui_lang == 'ar' %}جاري التحميل…{% else %}Loading…{% endif %}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ds-toolbar">
+      <div class="ds-toolbar__left">
+      {% if request.user|has_perm:'payments.manage' %}
+        <button class="ds-btn" id="p-edit" disabled>{% if request.session.ui_lang == 'ar' %}تعديل المدفوعات{% else %}Edit Payment{% endif %}</button>
+        <button class="ds-btn ds-btn--danger" id="p-delete" disabled>{% if request.session.ui_lang == 'ar' %}حذف المدفوعات{% else %}Delete Payment{% endif %}</button>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/payments_live.js" defer></script>
+{% endblock %}

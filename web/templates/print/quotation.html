@@ -1,0 +1,41 @@
+{% extends "print/_base.html" %}
+{% block content %}
+{% if request.session.ui_lang == 'ar' %}
+<style>
+  .report-spacer { height: 32mm !important; }
+  .page { direction: rtl; }
+  table, th, td { direction: rtl; }
+  th, td { text-align: right; }
+</style>
+{% endif %}
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}عرض السعر{% else %}Quotation{% endif %}</h2>
+  <table>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</th>
+      <td>{{ booking.customer.name }}</td>
+      <th>{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</th>
+      <td>{{ booking.vehicle.brand.name }} {{ booking.vehicle.model.name }}</td>
+    </tr>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}التواريخ{% else %}Dates{% endif %}</th>
+      <td>{{ booking.pickup_date }} → {{ booking.return_date }}</td>
+      <th>{% if request.session.ui_lang == 'ar' %}الأيام{% else %}Days{% endif %}</th>
+      <td>{{ booking.days }}</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}الإجمالي المقدر{% else %}Estimated Total{% endif %}</h2>
+  <table>
+    {% with currency=booking.currency_code|default:business.currency_code|default:"OMR" %}
+    <tr><th>{% if request.session.ui_lang == 'ar' %}السعر اليومي{% else %}Daily Rate{% endif %}</th><td class="right">{{ currency }} {{ booking.daily_rate }}</td></tr>
+    <tr><th>{% if request.session.ui_lang == 'ar' %}الإضافات{% else %}Extras{% endif %}</th><td class="right">{{ currency }} {{ booking.extras_total }}</td></tr>
+    <tr><th>{% if request.session.ui_lang == 'ar' %}ضريبة القيمة المضافة{% else %}VAT{% endif %}</th><td class="right">{{ currency }} {{ booking.vat_amount }}</td></tr>
+    <tr><th>{% if request.session.ui_lang == 'ar' %}الإجمالي{% else %}Total{% endif %}</th><td class="right"><b>{{ currency }} {{ booking.total_amount }}</b></td></tr>
+    {% endwith %}
+  </table>
+</div>
+{% endblock %}

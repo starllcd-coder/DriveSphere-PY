@@ -1,0 +1,143 @@
+{% load static %}
+{% with ui_lang=request.session.ui_lang|default:request.user.preferred_language|default:"en" %}
+<!DOCTYPE html>
+<html lang="{{ ui_lang }}" dir="{% if ui_lang == 'ar' %}rtl{% else %}ltr{% endif %}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title|default:"DriveSphere" }}</title>
+
+  <!-- DriveSphere Theme -->
+  <!-- App favicon -->
+  <link rel="icon" href="{% static 'img/logo/logo.ico' %}" type="image/x-icon" />
+  <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+  <link rel="stylesheet" href="{% static 'css/ds-responsive.css' %}">
+
+  <!-- Optional Tailwind build (if you keep it) -->
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+
+  <!-- Core scripts -->
+  <script src="{% static 'js/api.js' %}" defer></script>
+  <script src="{% static 'js/ui.js' %}" defer></script>
+  <script src="{% static 'js/app.js' %}" defer></script>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body class="ds-body min-h-screen{% if ui_lang == 'ar' %} is-rtl{% endif %}">
+  <div class="flex h-screen overflow-hidden ds-shell">
+    {% include "base/_sidebar.html" with ui_lang=ui_lang %}
+
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Topbar (must live in base so the heading block works on every page) -->
+      <div class="ds-topbar">
+        <div class="ds-topbar__left">
+          <h1 class="ds-page-title">{% block heading %}Dashboard{% endblock %}</h1>
+        </div>
+
+        <div class="ds-topbar__right">
+          <div class="ds-user">
+            <span class="ds-user__avatar ds-user__avatar--icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img" aria-label="User">
+                <path d="M12 12c2.761 0 5-2.239 5-5S14.761 2 12 2 7 4.239 7 7s2.239 5 5 5Zm0 2c-4.418 0-8 2.239-8 5v3h16v-3c0-2.761-3.582-5-8-5Z" />
+              </svg>
+            </span>
+            <div class="ds-user__meta">
+              <div class="ds-user__top">
+                <div class="ds-user__name">{{ request.user.username|default:request.user.email|cut:'@local' }}</div>
+                {% if request.user.role %}
+                  <div class="ds-user__role">
+                    {% if request.session.ui_lang == 'ar' %}
+                      {% with rc=request.user.role.code %}
+                        {% if rc == 'ADMIN' %}مشرف{% elif rc == 'MANAGER' %}مدير{% elif rc == 'AGENT' %}وكيل{% elif rc == 'MECHANIC' %}فني{% elif rc == 'ACCOUNTANT' %}محاسب{% elif rc == 'VIEWER' %}مُشاهد{% else %}{{ request.user.role.name|default:request.user.role.code }}{% endif %}
+                      {% endwith %}
+                    {% else %}
+                      {{ request.user.role.name|default:request.user.role.code }}
+                    {% endif %}
+                  </div>
+                {% endif %}
+              </div>
+              <div class="ds-user__sub">
+                {% if ui_lang == 'ar' %}
+                  <span id="dsClock">--</span>
+                  <span class="ds-dot">•</span>
+                  {% if ds_active_branch %}{{ ds_active_branch.name }}{% else %}لا يوجد فرع{% endif %}
+                {% else %}
+                  {% if ds_active_branch %}{{ ds_active_branch.name }}{% else %}No Branch{% endif %}
+                  <span class="ds-dot">•</span>
+                  <span id="dsClock">--</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="ds-lang-toggle" title="{% if ui_lang == 'ar' %}اللغة{% else %}Language{% endif %}">
+            <button class="ds-lang-toggle__btn {% if ui_lang == 'en' %}is-active{% endif %}" type="button" data-lang="en">EN</button>
+            <button class="ds-lang-toggle__btn {% if ui_lang == 'ar' %}is-active{% endif %}" type="button" data-lang="ar">AR</button>
+          </div>
+
+          <div class="ds-topbar__dropdown" data-dropdown>
+            <button class="ds-topbar__pill ds-topbar__pill--search" type="button" data-dropdown-toggle="search" aria-expanded="false" aria-controls="ds-search-panel">
+              <span class="ds-pill__icon">🔎</span>
+            </button>
+            <div class="ds-topbar__panel ds-topbar__panel--search" id="ds-search-panel" data-dropdown-panel="search">
+              <form class="ds-topbar__searchForm" action="/dashboard/" method="get" data-global-search-form data-search-endpoint="/api/search/">
+                <input class="ds-input" name="q" autocomplete="off" placeholder="{% if ui_lang == 'ar' %}ابحث في المركبات والعملاء والمدفوعات والصيانة{% else %}Search vehicles, customers, payments, maintenance{% endif %}" data-global-search-input>
+                <div class="ds-topbar__searchActions">
+                  <button class="ds-btn ds-btn--primary" type="submit">{% if ui_lang == 'ar' %}بحث{% else %}Search{% endif %}</button>
+                </div>
+              </form>
+              <div class="ds-topbar__hint">{% if ui_lang == 'ar' %}ابدأ بكتابة حرفين على الأقل لعرض النتائج المباشرة.{% else %}Start typing at least 2 characters to see live results.{% endif %}</div>
+              <div class="ds-searchResults" data-global-search-results>
+                <div class="ds-empty">{% if ui_lang == 'ar' %}اكتب للبحث عبر النظام بالكامل.{% else %}Type to search across the whole workspace.{% endif %}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ds-topbar__dropdown" data-dropdown>
+            <button class="ds-topbar__pill ds-topbar__pill--notify" type="button" data-dropdown-toggle="notify" aria-expanded="false" aria-controls="ds-notify-panel">
+              <span class="ds-pill__icon">🔔</span>
+              <span class="ds-pill__dot" id="ds-notify-dot"></span>
+            </button>
+            <div class="ds-topbar__panel ds-topbar__panel--notify" id="ds-notify-panel" data-dropdown-panel="notify">
+              <div class="ds-topbar__panelTitle">{% if ui_lang == 'ar' %}الإشعارات{% else %}Notifications{% endif %}</div>
+              <div class="ds-notifyList" id="ds-notify-list">
+                <div class="ds-empty">Loading…</div>
+              </div>
+              <button class="ds-topbar__panelBtn" type="button" id="ds-notify-clear">{% if ui_lang == 'ar' %}وضع الكل كمقروء{% else %}Mark All Read{% endif %}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main class="p-4 sm:p-6 overflow-y-auto min-w-0">
+        <div class="ds-pageHeader" id="ds-page-header">
+          <div>
+            <h2 class="ds-pageHeader__title" id="ds-page-header-title"></h2>
+            <div class="ds-pageHeader__sub" id="ds-page-header-sub">{% block page_subtitle %}{% endblock %}</div>
+          </div>
+        </div>
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <div id="ds-toast-root" class="ds-toastRoot" aria-live="polite" aria-atomic="true"></div>
+
+  {% block extra_js %}{% endblock %}
+  <style>
+    .ds-searchResults { margin-top: 12px; max-height: 360px; overflow-y: auto; }
+    .ds-searchGroup + .ds-searchGroup { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(20,35,60,0.08); }
+    .ds-searchGroup__label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .ds-searchItem { display: block; padding: 10px 12px; border-radius: 14px; text-decoration: none; color: inherit; }
+    .ds-searchItem:hover { background: rgba(37, 99, 235, 0.06); }
+    .ds-searchItem__title { font-weight: 700; color: #16305f; }
+    .ds-searchItem__sub, .ds-searchItem__meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .ds-notifyItem--interactive { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(20,35,60,0.08); }
+    .ds-notifyItem__body { flex: 1; text-decoration: none; color: inherit; }
+    .ds-notifyItem__actions { display: flex; gap: 6px; }
+    .ds-notifyAction { border: 0; background: rgba(37,99,235,0.08); color: #16305f; border-radius: 999px; padding: 6px 10px; font-size: 11px; font-weight: 700; cursor: pointer; }
+  </style>
+</body>
+</html>
+{% endwith %}

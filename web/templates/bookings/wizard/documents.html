@@ -1,0 +1,32 @@
+{% extends "bookings/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}المستندات{% else %}Documents{% endif %}</h3>
+
+{% if booking_id %}
+  <div class="ds-toolbar" style="margin-bottom:12px;">
+    <div class="ds-toolbar__left">
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking_id }}/invoice/">{% if request.session.ui_lang == 'ar' %}إنشاء فاتورة{% else %}Generate Invoice{% endif %}</a>
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking_id }}/agreement/">{% if request.session.ui_lang == 'ar' %}إنشاء اتفاقية{% else %}Generate Agreement{% endif %}</a>
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking_id }}/confirmation/">{% if request.session.ui_lang == 'ar' %}تأكيد الحجز{% else %}Booking Confirmation{% endif %}</a>
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking_id }}/quotation/">{% if request.session.ui_lang == 'ar' %}عرض أسعار{% else %}Quotation{% endif %}</a>
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking_id }}/handover-checklist/">{% if request.session.ui_lang == 'ar' %}قائمة فحص التسليم{% else %}Handover Checklist{% endif %}</a>
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking_id }}/return-report/">{% if request.session.ui_lang == 'ar' %}تقرير الإرجاع{% else %}Return Report{% endif %}</a>
+    </div>
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn ds-btn--ghost" href="{{ wizard_base }}/handover/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    <a class="ds-btn ds-btn--primary" href="{{ wizard_base }}/finish/">{% if request.session.ui_lang == 'ar' %}إنهاء{% else %}Finish{% endif %}</a>
+  </div>
+{% else %}
+  {% if error %}
+    <div class="ds-alert ds-alert--danger">{{ error }}</div>
+  {% else %}
+    <div class="ds-empty">{% if request.session.ui_lang == 'ar' %}تعذر إنشاء الحجز. يرجى مراجعة بياناتك.{% else %}Unable To Create Booking. Please Review Your Data.{% endif %}</div>
+  {% endif %}
+  <div class="ds-wizard__actions">
+    <a class="ds-btn" href="{{ wizard_base }}/customer/">{% if request.session.ui_lang == 'ar' %}ابدأ من جديد{% else %}Start Over{% endif %}</a>
+  </div>
+{% endif %}
+{% endblock %}

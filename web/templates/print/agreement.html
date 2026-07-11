@@ -1,0 +1,364 @@
+{% extends "print/_base.html" %}
+{% block content %}
+<style>
+  .doc-meta-inline { display: none !important; }
+  .agreement-doc-meta { max-width: 900px; margin: 32px auto 12px; text-align: right; font-size: 12px; color: #6b7b8e; line-height: 1.35; }
+  .agreement-doc-meta strong { color: #14233c; }
+  .agreement-title { font-size: 28px; font-weight: 800; margin: 6px 0 16px; text-align: center; }
+  .agreement-section { margin-top: 16px; }
+  .agreement-section h2 { text-align: center; }
+  /* Ensure Arabic column renders right-to-left without changing font */
+  .agreement-table th:nth-child(2) { direction: rtl; text-align: right; }
+  .agreement-table th:nth-child(2) .agreement-row { direction: rtl; }
+  .continuation-section { padding-top: 10px; }
+  .continuation-section h2 { margin-top: 0; }
+  /* Extra top spacing for Charges continuation to avoid header overlap */
+  .continuation-charges { padding-top: 18mm; }
+  /* Extra top spacing for Terms continuation to avoid header overlap */
+  .continuation-terms { padding-top: 18mm; }
+  /* Extra top spacing for Driving License section on continuation page */
+  .continuation-license { padding-top: 18mm; }
+  .agreement-table { width: 100%; max-width: 900px; margin: 0 auto; border-collapse: collapse; font-size: 12px; }
+  .agreement-table th, .agreement-table td { border: 1px solid #d9dde6; padding: 8px 10px; vertical-align: top; }
+  .agreement-table th { width: 50%; background: #f7f8fb; }
+  .agreement-row { display: flex; flex-direction: column; gap: 6px; }
+  .agreement-row strong { font-weight: 700; }
+  .signature-box { height: 70px; border: 1px solid #d9dde6; margin-top: 8px; }
+</style>
+
+<div class="agreement-doc-meta">
+  {% if doc_number %}<strong>{{ doc_number }}</strong><br>{% endif %}
+  {{ now|default:"" }}
+</div>
+
+<div class="agreement-title">Car Rental Agreement | عقد تأجير مركبة</div>
+
+<div class="agreement-section">
+  <h2>Agreement Information | معلومات العقد</h2>
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div><strong>Agreement Number:</strong> {{ doc_number|default:"-" }}</div>
+          <div><strong>Booking Number:</strong> {{ booking.reference|default:booking.id }}</div>
+          <div><strong>Branch:</strong> {{ booking.branch.name|default:"-" }}</div>
+          <div><strong>Date:</strong> {{ now|default:"-" }}</div>
+          <div><strong>Currency:</strong> {{ booking.currency_code|default:business.currency_code|default:"OMR" }}</div>
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div><strong>رقم العقد:</strong> {{ doc_number|default:"-" }}</div>
+          <div><strong>رقم الحجز:</strong> {{ booking.reference|default:booking.id }}</div>
+          <div><strong>الفرع:</strong> {{ booking.branch.name|default:"-" }}</div>
+          <div><strong>التاريخ:</strong> {{ now|default:"-" }}</div>
+          <div><strong>العملة:</strong> {{ booking.currency_code|default:business.currency_code|default:"OMR" }}</div>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+
+<div class="agreement-section">
+  <h2>Company Information | معلومات الشركة</h2>
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div><strong>Company Name:</strong> {{ business.business_name|default:"-" }}</div>
+          <div><strong>Commercial Registration (CR):</strong> {{ business.commercial_registration_number|default:"-" }}</div>
+          <div><strong>VAT / Tax Number:</strong> {{ business.vat_no|default:"-" }}</div>
+          <div><strong>Address:</strong> {{ business.address|default:"-" }}</div>
+          <div><strong>Phone:</strong> {{ business.phone_number|default:"-" }}</div>
+          <div><strong>Email:</strong> {{ business.email|default:"-" }}</div>
+          <div><strong>Website:</strong> {{ business.website|default:"-" }}</div>
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div><strong>اسم الشركة:</strong> {{ business.business_name_ar|default:business.business_name }}</div>
+          <div><strong>السجل التجاري:</strong> {{ business.commercial_registration_number|default:"-" }}</div>
+          <div><strong>الرقم الضريبي:</strong> {{ business.vat_no|default:"-" }}</div>
+          <div><strong>العنوان:</strong> {{ business.address_ar|default:business.address }}</div>
+          <div><strong>الهاتف:</strong> {{ business.phone_number_ar|default:business.phone_number }}</div>
+          <div><strong>البريد الإلكتروني:</strong> {{ business.email_ar|default:business.email }}</div>
+          <div><strong>الموقع الإلكتروني:</strong> {{ business.website_ar|default:business.website }}</div>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+
+<div class="agreement-section">
+  <h2>Customer Information | معلومات العميل</h2>
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div><strong>Full Name:</strong> {{ booking.customer.name|default:"-" }}</div>
+          <div><strong>Nationality:</strong> -</div>
+          <div><strong>ID / Passport No:</strong> {{ booking.customer.id_number|default:"-" }}</div>
+          <div><strong>Phone:</strong> {{ booking.customer.phone_number|default:"-" }}</div>
+          <div><strong>Address:</strong> {{ booking.customer.address|default:"-" }}</div>
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div><strong>الاسم الكامل:</strong> {{ booking.customer.name|default:"-" }}</div>
+          <div><strong>الجنسية:</strong> -</div>
+          <div><strong>رقم الهوية / الجواز:</strong> {{ booking.customer.id_number|default:"-" }}</div>
+          <div><strong>الهاتف:</strong> {{ booking.customer.phone_number|default:"-" }}</div>
+          <div><strong>العنوان:</strong> {{ booking.customer.address|default:"-" }}</div>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+
+<div class="agreement-section continuation-license">
+  <div class="page-break" aria-hidden="true"><div class="header-spacer" aria-hidden="true"></div></div>
+  <h2>Driving License Details | تفاصيل رخصة القيادة</h2>
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div><strong>License Number:</strong> {{ booking.customer.license_number|default:"-" }}</div>
+          <div><strong>Issuing Country:</strong> {{ booking.customer.license_issuer|default:"-" }}</div>
+          <div><strong>Issue Date:</strong> {{ booking.customer.license_issue_date|date:"Y-m-d" }}</div>
+          <div><strong>Expiry Date:</strong> {{ booking.customer.license_expiry_date|date:"Y-m-d" }}</div>
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div><strong>رقم الرخصة:</strong> {{ booking.customer.license_number|default:"-" }}</div>
+          <div><strong>جهة الإصدار:</strong> {{ booking.customer.license_issuer|default:"-" }}</div>
+          <div><strong>تاريخ الإصدار:</strong> {{ booking.customer.license_issue_date|date:"Y-m-d" }}</div>
+          <div><strong>تاريخ الانتهاء:</strong> {{ booking.customer.license_expiry_date|date:"Y-m-d" }}</div>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+
+<div class="agreement-section">
+  <h2>Vehicle Information | معلومات المركبة</h2>
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div><strong>Plate Number:</strong> {{ booking.vehicle.plate_number|default:"-" }}</div>
+          <div><strong>VIN:</strong> {{ booking.vehicle.vin|default:"-" }}</div>
+          <div><strong>Brand:</strong> {{ booking.vehicle.brand.name|default:"-" }}</div>
+          <div><strong>Model:</strong> {{ booking.vehicle.model.name|default:"-" }}</div>
+          <div><strong>Year:</strong> {{ booking.vehicle.year|default:"-" }}</div>
+          <div><strong>Color:</strong> {{ booking.vehicle.color|default:"-" }}</div>
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div><strong>رقم اللوحة:</strong> {{ booking.vehicle.plate_number|default:"-" }}</div>
+          <div><strong>رقم الهيكل:</strong> {{ booking.vehicle.vin|default:"-" }}</div>
+          <div><strong>الماركة:</strong> {{ booking.vehicle.brand.name|default:"-" }}</div>
+          <div><strong>الموديل:</strong> {{ booking.vehicle.model.name|default:"-" }}</div>
+          <div><strong>السنة:</strong> {{ booking.vehicle.year|default:"-" }}</div>
+          <div><strong>اللون:</strong> {{ booking.vehicle.color|default:"-" }}</div>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+
+<div class="agreement-section">
+  <h2>Rental Details | تفاصيل الإيجار</h2>
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div><strong>Pickup Date & Time:</strong> {{ booking.pickup_date }}{% if booking.pickup_time %} {{ booking.pickup_time }}{% endif %}</div>
+          <div><strong>Return Date & Time:</strong> {{ booking.return_date }}{% if booking.return_time %} {{ booking.return_time }}{% endif %}</div>
+          <div><strong>Grace Period:</strong> - minutes</div>
+          <div><strong>Starting Odometer:</strong> {{ booking.handover.odometer_out_km|default:"-" }}</div>
+          <div><strong>Fuel Level at Pickup:</strong> {% if booking.handover %}{{ booking.handover.fuel_out_percent }}%{% else %}-{% endif %}</div>
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div><strong>تاريخ ووقت الاستلام:</strong> {{ booking.pickup_date }}{% if booking.pickup_time %} {{ booking.pickup_time }}{% endif %}</div>
+          <div><strong>تاريخ ووقت الإرجاع:</strong> {{ booking.return_date }}{% if booking.return_time %} {{ booking.return_time }}{% endif %}</div>
+          <div><strong>فترة السماح:</strong> - دقيقة</div>
+          <div><strong>عداد البداية:</strong> {{ booking.handover.odometer_out_km|default:"-" }}</div>
+          <div><strong>مستوى الوقود عند الاستلام:</strong> {% if booking.handover %}{{ booking.handover.fuel_out_percent }}%{% else %}-{% endif %}</div>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+
+<div class="agreement-section">
+  <h2>Charges & Payment | الرسوم والدفع</h2>
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div><strong>Daily Rate:</strong> {{ booking.currency_code }} {{ booking.daily_rate }}</div>
+          <div><strong>Number of Days:</strong> {{ booking.days }}</div>
+          <div><strong>Rental Total:</strong> {{ booking.currency_code }} {{ booking.subtotal_amount }}</div>
+          <div><strong>Extras:</strong> {{ booking.currency_code }} {{ booking.extras_total }}</div>
+          <div><strong>Discount:</strong> -</div>
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div><strong>السعر اليومي:</strong> {{ booking.currency_code }} {{ booking.daily_rate }}</div>
+          <div><strong>عدد الأيام:</strong> {{ booking.days }}</div>
+          <div><strong>إجمالي الإيجار:</strong> {{ booking.currency_code }} {{ booking.subtotal_amount }}</div>
+          <div><strong>الإضافات:</strong> {{ booking.currency_code }} {{ booking.extras_total }}</div>
+          <div><strong>الخصم:</strong> -</div>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+
+<div class="page-break" aria-hidden="true"><div class="header-spacer" aria-hidden="true"></div></div>
+
+<div class="agreement-section continuation-section continuation-charges">
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div><strong>Fees:</strong> -</div>
+          <div><strong>VAT:</strong> {{ booking.currency_code }} {{ booking.vat_amount }}</div>
+          <div><strong>Fees:</strong> -</div>
+          <div><strong>VAT:</strong> {{ booking.currency_code }} {{ booking.vat_amount }}</div>
+          <div><strong>Discount:</strong> -</div>
+          <div><strong>Grand Total:</strong> {{ booking.currency_code }} {{ booking.total_amount }}</div>
+          <div><strong>Deposit:</strong> {{ booking.currency_code }} {{ booking.deposit_amount }}</div>
+          <div><strong>Paid Amount:</strong> -</div>
+          <div><strong>Balance Due:</strong> {{ booking.currency_code }} {{ booking.total_amount }}</div>
+          <div><strong>Payment Method:</strong> -</div>
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div><strong>الرسوم:</strong> -</div>
+          <div><strong>ضريبة القيمة المضافة:</strong> {{ booking.currency_code }} {{ booking.vat_amount }}</div>
+          <div><strong>الرسوم:</strong> -</div>
+          <div><strong>ضريبة القيمة المضافة:</strong> {{ booking.currency_code }} {{ booking.vat_amount }}</div>
+          <div><strong>الخصم:</strong> -</div>
+          <div><strong>الإجمالي الكلي:</strong> {{ booking.currency_code }} {{ booking.total_amount }}</div>
+          <div><strong>مبلغ التأمين:</strong> {{ booking.currency_code }} {{ booking.deposit_amount }}</div>
+          <div><strong>المبلغ المدفوع:</strong> -</div>
+          <div><strong>المبلغ المتبقي:</strong> {{ booking.currency_code }} {{ booking.total_amount }}</div>
+          <div><strong>طريقة الدفع:</strong> -</div>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+
+<div class="agreement-section">
+  <h2>Insurance Coverage | التغطية التأمينية</h2>
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div>Collision Damage Waiver up to: -</div>
+          <div>Deductible per accident: -</div>
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div>تغطية أضرار التصادم حتى: -</div>
+          <div>مبلغ التحمل لكل حادث: -</div>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+
+<div class="agreement-section">
+  <h2>Terms & Conditions | الشروط والأحكام</h2>
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div><strong>1. Authorized Driver</strong><br>Only the renter and approved drivers listed in this agreement may drive the vehicle.</div>
+          <div><strong>2. Vehicle Use</strong><br>The vehicle must not be used for illegal activities, racing, off-road driving, towing, or commercial transport without permission.</div>
+          <div><strong>3. Fuel Policy</strong><br>The vehicle must be returned with the same fuel level as at pickup.</div>
+          <div><strong>4. Late Return</strong><br>Late return beyond the grace period may result in additional rental charges.</div>
+          <div><strong>5. Traffic Fines</strong><br>The renter is responsible for all traffic violations during the rental period.</div>
+          
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div><strong>1. السائق المصرح له</strong><br>يسمح بقيادة المركبة فقط للمستأجر والسائقين المعتمدين المسجلين في العقد.</div>
+          <div><strong>2. استخدام المركبة</strong><br>يمنع استخدام المركبة في الأنشطة غير القانونية أو السباقات أو القيادة على الطرق الوعرة أو السحب أو النقل التجاري دون إذن.</div>
+          <div><strong>3. سياسة الوقود</strong><br>يجب إعادة المركبة بنفس مستوى الوقود عند الاستلام.</div>
+          <div><strong>4. التأخير في الإرجاع</strong><br>قد يؤدي التأخير بعد فترة السماح إلى احتساب رسوم إضافية.</div>
+          <div><strong>5. المخالفات المرورية</strong><br>يتحمل المستأجر مسؤولية جميع المخالفات المرورية خلال فترة الإيجار.</div>
+          
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+
+<div class="page-break" aria-hidden="true"><div class="header-spacer" aria-hidden="true"></div></div>
+
+<div class="agreement-section continuation-section continuation-terms">
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div><strong>6. Accidents</strong><br>All accidents must be reported immediately with an official police report.</div>
+          <div><strong>7. Vehicle Care</strong><br>The renter must return the vehicle in the same condition received except for normal wear.</div>
+          <div><strong>8. Smoking Policy</strong><br>Smoking inside the vehicle may incur cleaning charges.</div>
+          <div><strong>9. Breakdown</strong><br>Customer must contact the company immediately in case of mechanical failure.</div>
+          <div><strong>10. Jurisdiction</strong><br>This agreement is governed by the laws of the Sultanate of Oman.</div>
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div><strong>6. الحوادث</strong><br>يجب الإبلاغ عن جميع الحوادث فورًا مع تقديم تقرير رسمي من الشرطة.</div>
+          <div><strong>7. المحافظة على المركبة</strong><br>يجب إعادة المركبة بنفس الحالة التي استلمها بها باستثناء الاستهلاك الطبيعي.</div>
+          <div><strong>8. التدخين</strong><br>قد يتم فرض رسوم تنظيف في حال التدخين داخل المركبة.</div>
+          <div><strong>9. الأعطال</strong><br>يجب التواصل مع الشركة فورًا في حال حدوث عطل ميكانيكي.</div>
+          <div><strong>10. الاختصاص القضائي</strong><br>يخضع هذا العقد لقوانين سلطنة عمان.</div>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+
+<div class="agreement-section">
+  <h2>Signatures | التوقيعات</h2>
+  <table class="agreement-table">
+    <tr>
+      <th>
+        <div class="agreement-row">
+          <div><strong>Customer Name:</strong> {{ booking.customer.name|default:"-" }}</div>
+          <div><strong>Customer Signature:</strong></div>
+          <div class="signature-box"></div>
+          <div><strong>Company Representative:</strong> -</div>
+          <div><strong>Signature:</strong></div>
+          <div class="signature-box"></div>
+          <div><strong>Date:</strong> {{ now|default:"-" }}</div>
+        </div>
+      </th>
+      <th>
+        <div class="agreement-row">
+          <div><strong>اسم العميل:</strong> {{ booking.customer.name|default:"-" }}</div>
+          <div><strong>توقيع العميل:</strong></div>
+          <div class="signature-box"></div>
+          <div><strong>ممثل الشركة:</strong> -</div>
+          <div><strong>التوقيع:</strong></div>
+          <div class="signature-box"></div>
+          <div><strong>التاريخ:</strong> {{ now|default:"-" }}</div>
+        </div>
+      </th>
+    </tr>
+  </table>
+</div>
+{% endblock %}

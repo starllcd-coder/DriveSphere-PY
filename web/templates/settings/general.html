@@ -1,0 +1,140 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}Settings{% endblock %}
+
+{% block content %}
+  <div class="ds-card ds-card--wide">
+    <div class="ds-card__head">
+      <div class="ds-card__title">General</div>
+    </div>
+
+    <form class="ds-form ds-form--grid" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% if messages %}
+        <div class="ds-form__full">
+          {% for message in messages %}
+            <div class="ds-alert {% if message.tags == 'success' %}ds-alert--success{% else %}ds-alert--info{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="ds-field">
+        <label class="ds-label">Business Name</label>
+        {{ form.business_name }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Business Name (Arabic)</label>
+        {{ form.business_name_ar }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Commercial Registration Number</label>
+        {{ form.commercial_registration_number }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Vat Number</label>
+        {{ form.vat_no }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Phone Number</label>
+        {{ form.phone_number }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Phone Number (Arabic)</label>
+        {{ form.phone_number_ar }}
+      </div>
+
+      <div class="ds-field ds-form__full">
+        <label class="ds-label">Address</label>
+        {{ form.address }}
+      </div>
+
+      <div class="ds-field ds-form__full">
+        <label class="ds-label">Address (Arabic)</label>
+        {{ form.address_ar }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Email</label>
+        {{ form.email }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Email (Arabic)</label>
+        {{ form.email_ar }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Website</label>
+        {{ form.website }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Website (Arabic)</label>
+        {{ form.website_ar }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Currency Code</label>
+        {{ form.currency_code }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Currency Symbol</label>
+        {{ form.currency_symbol }}
+      </div>
+
+      <div class="ds-field">
+        <label class="ds-label">Logo</label>
+        {{ form.logo }}
+      </div>
+
+      <div class="ds-form__full ds-actions">
+        <button class="ds-btn ds-btn--dark" type="submit">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="ds-card ds-card--wide" style="margin-top: 16px;">
+    <div class="ds-card__head">
+      <div class="ds-card__title">Branches</div>
+      <div class="ds-card__sub">Add Branches From Admin For Now (Chunk 1)</div>
+    </div>
+
+    <div class="ds-table">
+      <div class="ds-table__row ds-table__row--head">
+        <div>Name</div><div>Phone</div><div>Status</div>
+      </div>
+
+      {% for b in branches %}
+        <div class="ds-table__row">
+          <div>{{ b.name }}</div>
+          <div>{{ b.phone_number|default:"-" }}</div>
+          <div>{% if b.is_active %}Active{% else %}Inactive{% endif %}</div>
+        </div>
+      {% empty %}
+        <div class="ds-table__row">
+          <div class="ds-muted">{% if request.session.ui_lang == 'ar' %}لا توجد فروع{% else %}No Branches Yet.{% endif %}</div><div></div><div></div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <style>
+    input[type="text"], input[type="email"], input[type="number"], input[type="file"]{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(20,35,60,0.10);
+      background: rgba(255,255,255,0.75);
+      outline: none;
+      box-sizing: border-box;
+    }
+  </style>
+{% endblock %}

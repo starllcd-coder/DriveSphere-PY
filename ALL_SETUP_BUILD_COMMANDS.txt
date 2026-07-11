@@ -1,0 +1,158 @@
+DriveSphere - Complete Setup, Run, Build Commands (Windows PowerShell)
+=====================================================================
+
+Prerequisites
+-------------
+1) Python:
+   C:\Users\LENOVO\AppData\Local\Programs\Python\Python310\python.exe
+2) Flutter:
+   C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat
+3) Project root:
+   C:\Users\LENOVO\Desktop\DriveSphere
+
+
+WEB APP (Django)
+================
+
+1) Go to project root
+   cd C:\Users\LENOVO\Desktop\DriveSphere
+
+2) Create virtual environment
+   & "C:\Users\LENOVO\AppData\Local\Programs\Python\Python310\python.exe" -m venv .venv
+
+3) Activate venv (Option A)
+   Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+   .\.venv\Scripts\Activate.ps1
+
+4) Install web requirements
+   & ".\.venv\Scripts\python.exe" -m pip install --upgrade pip
+   & ".\.venv\Scripts\python.exe" -m pip install -r web\requirements\base.txt
+   # Optional dev tools:
+   & ".\.venv\Scripts\python.exe" -m pip install -r web\requirements\dev.txt
+
+5) Run migrations
+   & ".\.venv\Scripts\python.exe" web\manage.py migrate
+
+6) Run web server
+   & ".\.venv\Scripts\python.exe" web\manage.py runserver
+
+7) Optional: collect static (production)
+   & ".\.venv\Scripts\python.exe" web\manage.py collectstatic --noinput
+
+
+DESKTOP APP (PySide6)
+=====================
+
+1) Go to project root
+   cd C:\Users\LENOVO\Desktop\DriveSphere
+
+2) Use same .venv (or create if missing)
+   & "C:\Users\LENOVO\AppData\Local\Programs\Python\Python310\python.exe" -m venv .venv
+
+3) Install desktop runtime requirements
+   & ".\.venv\Scripts\python.exe" -m pip install --upgrade pip
+   & ".\.venv\Scripts\python.exe" -m pip install -r desktop\requirements.txt
+
+4) Run desktop app
+   $env:PYTHONPATH = (Resolve-Path .\desktop).Path
+   & ".\.venv\Scripts\python.exe" -m drivesphere_desktop.main
+
+   # Alternative (from desktop folder, no PYTHONPATH needed):
+   # cd C:\Users\LENOVO\Desktop\DriveSphere\desktop
+   # & "..\.venv\Scripts\python.exe" -m drivesphere_desktop.main
+
+5) Install desktop build requirements
+   & ".\.venv\Scripts\python.exe" -m pip install -r desktop\requirements-build.txt
+
+6) Clean old desktop build/dist (recommended)
+   cd C:\Users\LENOVO\Desktop\DriveSphere
+   Remove-Item -Recurse -Force .\build, .\dist -ErrorAction SilentlyContinue
+
+7) Build backend first (required for packaged desktop)
+   & ".\.venv\Scripts\python.exe" -m PyInstaller --noconfirm --clean ".\DriveSphereBackend.spec"
+
+8) Build desktop shell
+   & ".\.venv\Scripts\python.exe" -m PyInstaller --noconfirm --clean ".\DriveSphereDesktop.spec"
+
+9) Run packaged desktop app (from dist)
+   .\dist\DriveSphereDesktop\DriveSphereDesktop.exe
+
+10) Build installer EXE (standard - smaller size)
+   & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "C:\Users\LENOVO\Desktop\DriveSphere\desktop\installer\DriveSphereDesktop.iss"
+
+11) Build installer EXE (fast install profile)
+   & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "C:\Users\LENOVO\Desktop\DriveSphere\desktop\installer\DriveSphereDesktop.FastInstall.iss"
+
+12) Build MSIX package (unsigned)
+   powershell -ExecutionPolicy Bypass -File "C:\Users\LENOVO\Desktop\DriveSphere\desktop\installer\msix\build_msix.ps1" -Version "1.0.0.0"
+
+13) Build MSIX package + sign
+   powershell -ExecutionPolicy Bypass -File "C:\Users\LENOVO\Desktop\DriveSphere\desktop\installer\msix\build_msix.ps1" -Version "1.0.0.0" -PfxPath "C:\path\your-cert.pfx" -PfxPassword "your-password"
+
+
+CUSTOMER MOBILE APP (Flutter) - mobile\drivesphere_app
+=======================================================
+
+1) Go to app folder
+   cd C:\Users\LENOVO\Desktop\DriveSphere\mobile\drivesphere_app
+
+2) Get packages
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" pub get
+
+3) Run in Chrome
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" run -d chrome
+
+4) Run on Android device/emulator
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" run -d android
+
+5) Build Android APK (release)
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" build apk --release
+
+6) Build Android App Bundle (Play Store)
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" build appbundle --release
+
+7) Build iOS (must run on macOS with Xcode)
+   flutter pub get
+   flutter build ios --release
+   # Open ios/Runner.xcworkspace in Xcode to archive and export IPA
+
+
+STAFF MOBILE APP (Flutter) - mobile\drivesphere_staff_app
+==========================================================
+
+1) Go to app folder
+   cd C:\Users\LENOVO\Desktop\DriveSphere\mobile\drivesphere_staff_app
+
+2) Get packages
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" pub get
+
+3) Run in Chrome
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" run -d chrome
+
+4) Run on Android device/emulator
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" run -d android
+
+5) Build Android APK (release)
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" build apk --release
+
+6) Build Android App Bundle (Play Store)
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" build appbundle --release
+
+7) Build iOS (must run on macOS with Xcode)
+   flutter pub get
+   flutter build ios --release
+   # Open ios/Runner.xcworkspace in Xcode to archive and export IPA
+
+
+USEFUL CHECK COMMANDS
+=====================
+
+Python in venv:
+   & ".\.venv\Scripts\python.exe" --version
+
+Flutter doctor:
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" doctor
+
+Staff app analyze:
+   cd C:\Users\LENOVO\Desktop\DriveSphere\mobile\drivesphere_staff_app
+   & "C:\Users\LENOVO\Desktop\flutter_windows_3.41.4-stable\flutter\bin\flutter.bat" analyze

@@ -1,0 +1,123 @@
+{% extends "bookings/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}تفاصيل العميل{% else %}Customer Details{% endif %}</h3>
+
+<form method="get" class="ds-filters" style="margin-bottom:12px;">
+  <input class="ds-input" name="q" value="{{ q }}" placeholder="{% if request.session.ui_lang == 'ar' %}ابحث بالاسم أو الهاتف أو الهوية{% else %}Search By Name, Phone Or ID{% endif %}">
+  <button class="ds-btn" type="submit">{% if request.session.ui_lang == 'ar' %}بحث{% else %}Search{% endif %}</button>
+</form>
+
+<form method="post" class="ds-form">
+  {% csrf_token %}
+
+  {% if error %}
+    <div class="ds-alert ds-alert--danger" style="margin-bottom:12px;">{{ error }}</div>
+  {% endif %}
+
+  <div class="ds-radioRow" style="margin-bottom:10px;">
+    <label class="ds-radio"><input type="radio" name="customer_mode" value="existing" {% if mode != 'new' %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}قائم{% else %}Existing{% endif %}</label>
+    <label class="ds-radio"><input type="radio" name="customer_mode" value="new" {% if mode == 'new' %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}جديد{% else %}New{% endif %}</label>
+  </div>
+
+  <div class="ds-card ds-tableWrap" style="margin-bottom:12px;">
+    <table class="ds-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>{% if request.session.ui_lang == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الهاتف{% else %}Phone{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}رقم الهوية{% else %}ID Number{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Address{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in customers %}
+          <tr>
+            <td>
+              <input
+                type="radio"
+                name="customer_id"
+                value="{{ c.id }}"
+                data-name="{{ c.name|default:''|escape }}"
+                data-id-type="{{ c.id_type|default:'ID'|escape }}"
+                data-id-number="{{ c.id_number|default:''|escape }}"
+                data-phone-number="{{ c.phone_number|default:''|escape }}"
+                data-email="{{ c.email|default:''|escape }}"
+                data-address="{{ c.address|default:''|escape }}"
+                data-license-number="{{ c.license_number|default:''|escape }}"
+                data-license-issuer="{{ c.license_issuer|default:''|escape }}"
+                data-license-issue-date="{{ c.license_issue_date|date:'Y-m-d' }}"
+                data-license-expiry-date="{{ c.license_expiry_date|date:'Y-m-d' }}"
+                {% if data.customer_id|default:'' == c.id|stringformat:'s' %}checked{% endif %}
+              >
+            </td>
+            <td>{{ c.name }}</td>
+            <td>{{ c.phone_number|default:"-" }}</td>
+            <td>{{ c.id_number|default:"-" }}</td>
+            <td>{{ c.address|default:"-" }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="ds-empty">{% if request.session.ui_lang == 'ar' %}لم يتم العثور على عملاء.{% else %}No Customers Found.{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ds-formGrid">
+    <input class="ds-input" name="name" placeholder="{% if request.session.ui_lang == 'ar' %}اسم العميل{% else %}Customer Name{% endif %}" value="{{ data.customer_new.name|default:'' }}">
+    <select class="ds-input" name="id_type">
+      <option value="ID" {% if data.customer_new.id_type == 'ID' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}هوية{% else %}ID{% endif %}</option>
+      <option value="PASSPORT" {% if data.customer_new.id_type == 'PASSPORT' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}جواز سفر{% else %}Passport{% endif %}</option>
+      <option value="LICENSE" {% if data.customer_new.id_type == 'LICENSE' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}رخصة{% else %}License{% endif %}</option>
+    </select>
+    <input class="ds-input" name="id_number" placeholder="{% if request.session.ui_lang == 'ar' %}رقم الهوية{% else %}ID Number{% endif %}" value="{{ data.customer_new.id_number|default:'' }}">
+    <input class="ds-input" name="phone_number" placeholder="{% if request.session.ui_lang == 'ar' %}رقم الاتصال{% else %}Contact Number{% endif %}" value="{{ data.customer_new.phone_number|default:'' }}">
+    <input class="ds-input" name="email" placeholder="{% if request.session.ui_lang == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}" value="{{ data.customer_new.email|default:'' }}">
+    <input class="ds-input" name="address" placeholder="{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Address{% endif %}" value="{{ data.customer_new.address|default:'' }}">
+    <input class="ds-input" name="license_number" placeholder="{% if request.session.ui_lang == 'ar' %}رقم الرخصة{% else %}License Number{% endif %}" value="{{ data.customer_new.license_number|default:'' }}">
+    <input class="ds-input" name="license_issuer" placeholder="{% if request.session.ui_lang == 'ar' %}جهة الإصدار{% else %}Issuer{% endif %}" value="{{ data.customer_new.license_issuer|default:'' }}">
+    <input class="ds-input" name="license_issue_date" type="date" value="{{ data.customer_new.license_issue_date|default:'' }}">
+    <input class="ds-input" name="license_expiry_date" type="date" value="{{ data.customer_new.license_expiry_date|default:'' }}">
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn ds-btn--ghost" href="{{ wizard_cancel_url }}">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    <a class="ds-btn ds-btn--ghost" href="{{ wizard_cancel_url }}">{% if request.session.ui_lang == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+  </div>
+</form>
+
+<script>
+  (function () {
+    const radios = document.querySelectorAll('input[name="customer_id"]');
+    if (!radios.length) return;
+
+    const modeExisting = document.querySelector('input[name="customer_mode"][value="existing"]');
+    const setValue = (name, value) => {
+      const el = document.querySelector(`[name="${name}"]`);
+      if (el) el.value = value || "";
+    };
+
+    const fillFrom = (input) => {
+      if (!input) return;
+      if (modeExisting) modeExisting.checked = true;
+      setValue("name", input.dataset.name);
+      setValue("id_type", input.dataset.idType);
+      setValue("id_number", input.dataset.idNumber);
+      setValue("phone_number", input.dataset.phoneNumber);
+      setValue("email", input.dataset.email);
+      setValue("address", input.dataset.address);
+      setValue("license_number", input.dataset.licenseNumber);
+      setValue("license_issuer", input.dataset.licenseIssuer);
+      setValue("license_issue_date", input.dataset.licenseIssueDate);
+      setValue("license_expiry_date", input.dataset.licenseExpiryDate);
+    };
+
+    radios.forEach((r) => r.addEventListener("change", () => fillFrom(r)));
+
+    const checked = document.querySelector('input[name="customer_id"]:checked');
+    if (checked) fillFrom(checked);
+  })();
+</script>
+{% endblock %}

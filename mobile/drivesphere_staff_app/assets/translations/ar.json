@@ -1,0 +1,216 @@
+{
+  "app_name": "درايف سفير",
+  "tagline": "رحلات سلسة، وانتشار أوسع",
+
+  "common": {
+    "continue": "متابعة",
+    "close": "إغلاق",
+    "cancel": "إلغاء",
+    "logout": "تسجيل الخروج",
+    "loading": "جاري التحميل...",
+    "search": "بحث",
+    "save": "حفظ",
+    "english": "الإنجليزية",
+    "arabic": "العربية",
+    "try_again": "إعادة المحاولة",
+    "view": "عرض",
+    "select": "اختر",
+    "optional": "اختياري",
+    "yes": "نعم",
+    "no": "لا"
+  },
+
+  "splash": {
+    "loading": "جارٍ تجهيز تجربتك..."
+  },
+
+  "country": {
+    "title": "اختر دولتك",
+    "subtitle": "اختر دولتك في الخليج لتخصيص تجربتك في DriveSphere.",
+    "select_error": "يرجى اختيار الدولة"
+  },
+
+  "login": {
+    "welcome_back": "مرحباً بعودتك!",
+    "welcome_back_ar": "مرحباً بعودتك",
+    "email_or_username": "البريد الإلكتروني أو اسم المستخدم",
+    "password": "كلمة المرور",
+    "remember_me": "تذكرني",
+    "forgot_password": "هل نسيت كلمة المرور؟",
+    "sign_in": "تسجيل الدخول",
+    "forgot_password_info": "سيتم إضافة استعادة كلمة المرور لاحقاً."
+  },
+
+  "dashboard": {
+    "welcome": "مرحباً بك في DriveSphere",
+    "welcome_country": "مرحباً بك في DriveSphere • {}",
+    "subtitle": "ابحث عن المركبات، وأنشئ الحجوزات، وأدر المدفوعات، واجعل رحلتك أسهل.",
+    "start_searching": "ابدأ البحث",
+    "quick_actions": "إجراءات سريعة",
+    "search": "بحث",
+    "bookings": "الحجوزات",
+    "payments": "المدفوعات",
+    "alerts": "التنبيهات",
+    "need_before_rent": "ما تحتاجه قبل الاستئجار",
+    "tips": "• ارفع مستنداتك الصالحة\n• أكد تواريخ الحجز\n• راجع تفاصيل الدفع بعناية\n• فعّل الإشعارات للحصول على التحديثات"
+  },
+
+  "nav": {
+    "home": "الرئيسية",
+    "vehicles": "المركبات",
+    "map": "الخريطة",
+    "bookings": "الحجوزات",
+    "payments": "المدفوعات",
+    "profile": "الملف الشخصي"
+  },
+
+  "vehicles": {
+    "title": "المركبات المتاحة",
+    "search_title": "البحث عن مركبات",
+    "failed_load": "تعذر تحميل المركبات",
+    "failed_load_subtitle": "يرجى التحقق من الاتصال والمحاولة مرة أخرى.",
+    "empty_title": "لا توجد مركبات متاحة",
+    "empty_subtitle": "لا توجد مركبات للعرض حالياً.",
+    "search_empty_title": "لا توجد مركبات مطابقة",
+    "search_empty_subtitle": "جرّب تغيير العلامة التجارية أو التواريخ.",
+    "year": "سنة الصنع {}",
+    "per_day": "/ يوم",
+    "details": "تفاصيل المركبة",
+    "brand": "العلامة التجارية",
+    "model": "الطراز",
+    "year_label": "السنة",
+    "availability": "التوفر",
+    "daily_rate": "السعر اليومي",
+    "status": "الحالة",
+    "model_year": "سنة الطراز {}",
+    "ready_to_book": "هل أنت جاهز لحجز هذه المركبة؟",
+    "ready_to_book_subtitle": "أكمل الحجز في خطوات بسيطة.",
+    "book_now": "احجز الآن",
+    "pickup_date": "تاريخ الاستلام",
+    "return_date": "تاريخ الإرجاع",
+    "brand_field": "العلامة التجارية",
+    "brand_hint": "تويوتا، نيسان، بي إم دبليو..."
+  },
+
+  "booking": {
+    "title": "إنشاء حجز",
+    "customer_id": "رقم العميل",
+    "pickup_location": "موقع الاستلام",
+    "return_location": "موقع الإرجاع",
+    "notes": "ملاحظات",
+    "estimated_total": "الإجمالي التقديري",
+    "confirm_booking": "تأكيد الحجز",
+    "pickup_date_required": "تاريخ الاستلام مطلوب.",
+    "return_date_required": "تاريخ الإرجاع مطلوب.",
+    "date_order_error": "لا يمكن أن يكون تاريخ الإرجاع قبل تاريخ الاستلام.",
+    "created_title": "تم إنشاء الحجز",
+    "created_message": "تم إنشاء الحجز بنجاح.",
+    "go_dashboard": "الانتقال للرئيسية",
+    "view_bookings": "عرض الحجوزات",
+    "loading_bookings": "جارٍ تحميل الحجوزات...",
+    "history_title": "حجوزاتي",
+    "failed_load": "تعذر تحميل الحجوزات",
+    "failed_load_subtitle": "يرجى المحاولة مرة أخرى بعد قليل.",
+    "empty_title": "لا توجد حجوزات",
+    "empty_subtitle": "سيظهر سجل الحجوزات هنا بعد إنشاء أول حجز.",
+    "browse_vehicles": "تصفح المركبات",
+    "reference": "المرجع: {}",
+    "booking_id": "رقم الحجز: {}",
+    "pickup": "الاستلام",
+    "return": "الإرجاع",
+    "pickup_location_label": "موقع الاستلام",
+    "return_location_label": "موقع الإرجاع",
+    "total": "الإجمالي"
+  },
+
+  "payments": {
+    "title": "المدفوعات",
+    "booking_id": "رقم الحجز",
+    "amount": "المبلغ",
+    "method": "طريقة الدفع",
+    "notes": "ملاحظات",
+    "create_payment": "إنشاء دفعة",
+    "created_success": "تم إنشاء الدفعة بنجاح",
+    "failed_load": "تعذر تحميل المدفوعات",
+    "failed_load_subtitle": "يرجى المحاولة لاحقاً.",
+    "empty_title": "لا توجد مدفوعات",
+    "empty_subtitle": "ستظهر المدفوعات التي تنشئها هنا.",
+    "loading": "جارٍ تحميل المدفوعات...",
+    "receipt": "رقم الإيصال",
+    "booking_ref": "مرجع الحجز",
+    "date": "التاريخ",
+    "amount_label": "المبلغ"
+  },
+
+  "documents": {
+    "title": "مستنداتي",
+    "customer_id": "رقم العميل",
+    "document_type": "نوع المستند",
+    "expiry_date": "تاريخ الانتهاء",
+    "notes": "ملاحظات",
+    "choose_file": "اختر ملفاً",
+    "upload_document": "رفع المستند",
+    "choose_file_error": "يرجى اختيار ملف للرفع.",
+    "upload_success": "تم رفع المستند بنجاح",
+    "failed_load": "تعذر تحميل المستندات",
+    "failed_load_subtitle": "يرجى المحاولة لاحقاً.",
+    "empty_title": "لا توجد مستندات",
+    "empty_subtitle": "ارفع أول مستند للبدء.",
+    "loading": "جارٍ تحميل المستندات...",
+    "expiry": "تاريخ الانتهاء: {}"
+  },
+
+  "notifications": {
+    "title": "الإشعارات",
+    "failed_load": "تعذر تحميل الإشعارات",
+    "empty_title": "لا توجد إشعارات",
+    "mark_read": "تحديد كمقروء",
+    "delete": "حذف"
+  },
+
+  "profile": {
+    "title": "ملفي الشخصي",
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "first_name": "الاسم الأول",
+    "last_name": "اسم العائلة",
+    "country": "الدولة",
+    "change_country": "تغيير الدولة",
+    "my_documents": "مستنداتي",
+    "payments": "المدفوعات",
+    "notifications": "الإشعارات",
+    "booking_history": "سجل الحجوزات",
+    "settings": "الإعدادات",
+    "active": "نشط",
+    "staff": "موظف"
+  },
+
+  "settings": {
+    "title": "الإعدادات",
+    "preferences": "التفضيلات",
+    "country": "الدولة",
+    "language": "اللغة",
+    "language_subtitle": "اختر لغة التطبيق المفضلة",
+    "notifications": "الإشعارات",
+    "push_notifications": "إشعارات التطبيق",
+    "push_notifications_subtitle": "استقبل تنبيهات التطبيق وتحديثات الحجز",
+    "email_notifications": "إشعارات البريد الإلكتروني",
+    "email_notifications_subtitle": "استقبل التأكيدات والتذكيرات عبر البريد الإلكتروني",
+    "support_legal": "الدعم والشؤون القانونية",
+    "help_support": "المساعدة والدعم",
+    "help_support_subtitle": "احصل على المساعدة لحجوزاتك",
+    "privacy_policy": "سياسة الخصوصية",
+    "privacy_policy_subtitle": "كيف نستخدم بياناتك ونحميها",
+    "terms_conditions": "الشروط والأحكام",
+    "terms_conditions_subtitle": "شروط الخدمة والتأجير",
+    "app_version": "إصدار التطبيق",
+    "logout_title": "تسجيل الخروج",
+    "logout_message": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+    "push_updated": "تم تحديث تفضيل إشعارات التطبيق",
+    "email_updated": "تم تحديث تفضيل إشعارات البريد الإلكتروني",
+    "language_updated": "تم تحديث تفضيل اللغة",
+    "help_text": "للحصول على الدعم، يرجى التواصل مع مزود خدمة DriveSphere أو فريق دعم العملاء.",
+    "privacy_text": "تقدّر DriveSphere خصوصيتك. يتم التعامل مع معلوماتك بأمان وتُستخدم فقط لأغراض الخدمة.",
+    "terms_text": "باستخدامك DriveSphere فإنك توافق على شروط التأجير وسياسات الدفع ومتطلبات الامتثال المحلية."
+  }
+}

@@ -1,0 +1,77 @@
+{% extends "print/_base.html" %}
+{% block content %}
+{% if request.session.ui_lang == 'ar' %}
+<style>
+  .report-spacer { height: 32mm !important; }
+  .page { direction: rtl; }
+  table, th, td { direction: rtl; }
+  th, td { text-align: right; }
+</style>
+{% endif %}
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}فاتورة{% else %}Invoice{% endif %}</h2>
+  <table>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}الحجز{% else %}Booking{% endif %}</th>
+      <td>#{{ booking.id }}</td>
+      <th>{% if request.session.ui_lang == 'ar' %}المرجع{% else %}Reference{% endif %}</th>
+      <td>{{ booking.reference }}</td>
+    </tr>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</th>
+      <td>{{ booking.customer.name }}</td>
+      <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+      <td>{{ booking.status }}</td>
+    </tr>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</th>
+      <td>{{ booking.vehicle.brand.name }} {{ booking.vehicle.model.name }} ({{ booking.vehicle.plate_number }})</td>
+      <th>{% if request.session.ui_lang == 'ar' %}الأيام{% else %}Days{% endif %}</th>
+      <td>{{ settlement_days }}</td>
+    </tr>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}الاستلام{% else %}Pickup{% endif %}</th>
+      <td>{{ booking.pickup_date }}</td>
+      <th>{% if request.session.ui_lang == 'ar' %}الإرجاع{% else %}Return{% endif %}</th>
+      <td>{{ settlement_return_date }}</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}الرسوم{% else %}Charges{% endif %}</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>{% if request.session.ui_lang == 'ar' %}البند{% else %}Item{% endif %}</th>
+        <th class="right">{% if request.session.ui_lang == 'ar' %}المبلغ{% else %}Amount{% endif %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% with currency=booking.currency_code|default:business.currency_code|default:"OMR" %}
+      <tr><td>{% if request.session.ui_lang == 'ar' %}السعر اليومي × الأيام{% else %}Daily Rate x Days{% endif %}</td><td class="right">{{ currency }} {{ booking.daily_rate }} x {{ settlement_days }}</td></tr>
+      <tr><td>{% if request.session.ui_lang == 'ar' %}الإضافات{% else %}Extras{% endif %}</td><td class="right">{{ currency }} {{ booking.extras_total }}</td></tr>
+      <tr><td>{% if request.session.ui_lang == 'ar' %}الإجمالي الجزئي{% else %}Subtotal{% endif %}</td><td class="right">{{ currency }} {{ settlement_subtotal }}</td></tr>
+      <tr><td>{% if request.session.ui_lang == 'ar' %}ضريبة القيمة المضافة{% else %}VAT{% endif %}</td><td class="right">{{ currency }} {{ settlement_vat }}</td></tr>
+      {% if settlement_early_return_credit > 0 %}
+      <tr><td>{% if request.session.ui_lang == 'ar' %}خصم الإرجاع المبكر{% else %}Early Return Credit{% endif %}</td><td class="right">- {{ currency }} {{ settlement_early_return_credit }}</td></tr>
+      {% endif %}
+      <tr><td><b>{% if request.session.ui_lang == 'ar' %}الإجمالي (بدون التأمين){% else %}Total (Excl. Deposit){% endif %}</b></td><td class="right"><b>{{ currency }} {{ settlement_total_excl_deposit }}</b></td></tr>
+      {% if booking.return_report %}
+      <tr><td>{% if request.session.ui_lang == 'ar' %}إضافات الإرجاع{% else %}Return Additions{% endif %}</td><td class="right">{{ currency }} {{ settlement_additions_subtotal }}</td></tr>
+      {% endif %}
+      <tr><td>{% if request.session.ui_lang == 'ar' %}التأمين{% else %}Deposit{% endif %}</td><td class="right">{{ currency }} {{ booking.deposit_amount }}</td></tr>
+      <tr><td>{% if request.session.ui_lang == 'ar' %}مدفوع مسبقاً{% else %}Already Paid{% endif %}</td><td class="right">- {{ currency }} {{ settlement_already_paid }}</td></tr>
+      <tr><td><b>{% if request.session.ui_lang == 'ar' %}المبلغ النهائي المستحق{% else %}Final Due{% endif %}</b></td><td class="right"><b>{{ currency }} {{ settlement_final_due }}</b></td></tr>
+      {% endwith %}
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</h2>
+  <div class="muted">{{ booking.notes|default:"-" }}</div>
+</div>
+{% endblock %}
+

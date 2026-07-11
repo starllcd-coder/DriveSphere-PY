@@ -1,0 +1,84 @@
+{% extends "base/_app_shell.html" %}
+
+{% block heading %}{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page">
+  <div class="ds-card ds-card--panel">
+    <div class="ds-card__head">
+      <div>
+          <div class="ds-card__title">{% if is_edit %}{% if request.session.ui_lang == 'ar' %}تعديل العميل{% else %}Edit Customer{% endif %}{% else %}{% if request.session.ui_lang == 'ar' %}إضافة عميل{% else %}Add Customer{% endif %}{% endif %}</div>
+          <div class="ds-card__sub">{% if request.session.ui_lang == 'ar' %}تحديث بيانات العميل ومعلومات الرخصة{% else %}Update customer details and license info{% endif %}</div>
+      </div>
+      <a class="ds-btn ds-btn--ghost" href="/customers/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    </div>
+
+    {% if error %}
+      <div class="ds-alert ds-alert--danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" class="ds-form" style="margin-top:12px;">
+      {% csrf_token %}
+      <div class="ds-formGrid">
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}اسم العميل{% else %}Customer Name{% endif %}</label>
+          <input class="ds-input" name="name" placeholder="{% if request.session.ui_lang == 'ar' %}اسم العميل{% else %}Customer Name{% endif %}" value="{{ customer.name|default:'' }}" required>
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رقم الهاتف{% else %}Contact Number{% endif %}</label>
+          <input class="ds-input" name="phone_number" placeholder="{% if request.session.ui_lang == 'ar' %}الهاتف{% else %}Phone{% endif %}" value="{{ customer.phone_number|default:'' }}">
+        </div>
+
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}نوع الهوية{% else %}ID Type{% endif %}</label>
+          <select class="ds-input" name="id_type">
+            <option value="PASSPORT" {% if customer.id_type == 'PASSPORT' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}جواز سفر{% else %}Passport{% endif %}</option>
+            <option value="ID" {% if customer.id_type == 'ID' or not customer.id_type %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}هوية{% else %}Id{% endif %}</option>
+            <option value="LICENSE" {% if customer.id_type == 'LICENSE' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}رخصة{% else %}License{% endif %}</option>
+          </select>
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رقم الهوية{% else %}ID Number{% endif %}</label>
+          <input class="ds-input" name="id_number" placeholder="{% if request.session.ui_lang == 'ar' %}رقم الهوية{% else %}ID Number{% endif %}" value="{{ customer.id_number|default:'' }}">
+        </div>
+
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}</label>
+          <input class="ds-input" name="email" placeholder="{% if request.session.ui_lang == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}" value="{{ customer.email|default:'' }}">
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Address{% endif %}</label>
+          <input class="ds-input" name="address" placeholder="{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Address{% endif %}" value="{{ customer.address|default:'' }}">
+        </div>
+
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رقم الرخصة{% else %}License Number{% endif %}</label>
+          <input class="ds-input" name="license_number" placeholder="{% if request.session.ui_lang == 'ar' %}رقم الرخصة{% else %}License Number{% endif %}" value="{{ customer.license_number|default:'' }}">
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الجهة المصدرة{% else %}Issuer{% endif %}</label>
+          <input class="ds-input" name="license_issuer" placeholder="{% if request.session.ui_lang == 'ar' %}الجهة المصدرة{% else %}Issuer{% endif %}" value="{{ customer.license_issuer|default:'' }}">
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}تاريخ الإصدار{% else %}Issue Date{% endif %}</label>
+          <input class="ds-input" name="license_issue_date" type="date" value="{% if customer.license_issue_date %}{{ customer.license_issue_date|date:'Y-m-d' }}{% endif %}">
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}تاريخ الانتهاء{% else %}Expiry Date{% endif %}</label>
+          <input class="ds-input" name="license_expiry_date" type="date" value="{% if customer.license_expiry_date %}{{ customer.license_expiry_date|date:'Y-m-d' }}{% endif %}">
+        </div>
+
+        <div class="ds-field" style="grid-column:1/-1;">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</label>
+          <textarea class="ds-input" name="notes" rows="3" placeholder="{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}">{{ customer.notes|default:'' }}</textarea>
+        </div>
+      </div>
+
+      <div class="ds-wizard__actions" style="margin-top:12px;">
+        <a class="ds-btn ds-btn--ghost" href="/customers/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+        <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base/_app_shell.html" %}
+{% load permissions_tags %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}العملاء{% else %}Customers{% endif %}{% endblock %}
+{% block page_subtitle %}{% if request.session.ui_lang == 'ar' %}إدارة العملاء ومستنداتهم{% else %}Manage customers and their documents{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page" id="ds-customers">
+
+  <div class="ds-filters">
+    <input class="ds-input" id="c-name" placeholder="{% if request.session.ui_lang == 'ar' %}اسم العميل{% else %}Customer Name{% endif %}">
+    <input class="ds-input" id="c-phone" placeholder="{% if request.session.ui_lang == 'ar' %}الهاتف{% else %}Phone{% endif %}">
+    <input class="ds-input" id="c-id" placeholder="{% if request.session.ui_lang == 'ar' %}رقم الهوية{% else %}ID Number{% endif %}">
+  </div>
+
+  <div class="ds-toolbar">
+      <div class="ds-toolbar__left">
+      <button class="ds-btn ds-btn--primary" id="c-add">{% if request.session.ui_lang == 'ar' %}إضافة عميل{% else %}Add Customer{% endif %}</button>
+      <button class="ds-btn" id="c-docs-upload" disabled>{% if request.session.ui_lang == 'ar' %}رفع الهوية/الرخصة{% else %}Upload ID/License{% endif %}</button>
+      <button class="ds-btn" id="c-docs-view" disabled>{% if request.session.ui_lang == 'ar' %}عرض الهوية/الرخصة{% else %}View ID/License{% endif %}</button>
+    </div>
+    <div class="ds-toolbar__right">
+      {% if request.user|has_perm:'reports.view' or request.user|has_perm:'reports.view_limited' %}
+        <a class="ds-btn ds-btn--export" href="/print/reports/customers/" target="_blank">{% if request.session.ui_lang == 'ar' %}تصدير تقرير العملاء{% else %}Export Customers Report{% endif %}</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="ds-card ds-tableWrap" id="c-tableCard">
+    <table class="ds-table">
+      <thead>
+        <tr>
+          <th>{% if request.session.ui_lang == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الهاتف{% else %}Phone{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}رقم الهوية{% else %}ID Number{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Address{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody id="c-body">
+        <tr><td colspan="4" class="ds-empty">{% if request.session.ui_lang == 'ar' %}جاري التحميل…{% else %}Loading…{% endif %}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ds-toolbar">
+      <div class="ds-toolbar__left">
+      <button class="ds-btn" id="c-edit" disabled>{% if request.session.ui_lang == 'ar' %}تعديل العميل{% else %}Edit Customer{% endif %}</button>
+      <button class="ds-btn ds-btn--danger" id="c-del" disabled>{% if request.session.ui_lang == 'ar' %}حذف العميل{% else %}Delete Customer{% endif %}</button>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/customers_live.js" defer></script>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}المركبات{% else %}Vehicles{% endif %}{% endblock %}
+{% block page_subtitle %}{% if request.session.ui_lang == 'ar' %}إدارة أسطول المركبات، المستندات، والصور{% else %}Manage Fleet Vehicles, Documents, And Photos{% endif %}{% endblock %}
+
+{% block content %}
+{% load permissions_tags %}
+<div class="ds-page" id="ds-vehicles">
+
+  <div class="ds-toolbar__right">
+  </div>
+
+  <div class="ds-toolbar">
+    <div class="ds-toolbar__left">
+      {% if request.user|has_perm:'fleet.manage' %}
+        <a class="ds-btn ds-btn--dark" href="/vehicles/new/">{% if request.session.ui_lang == 'ar' %}إضافة مركبة جديدة{% else %}Add New Vehicle{% endif %}</a>
+      {% endif %}
+      <span class="ds-muted">{% if request.session.ui_lang == 'ar' %}اختر صف المركبة لفتح المستندات / الصور.{% else %}Select a vehicle row to open documents / photos.{% endif %}</span>
+    </div>
+    <div class="ds-toolbar__right"></div>
+  </div>
+
+  <form method="get" class="ds-form">
+    <div class="ds-filters" style="grid-template-columns: repeat(6, minmax(0, 1fr));">
+      <div>{{ filter_form.q }}</div>
+      <div>{{ filter_form.status }}</div>
+      <div>{{ filter_form.fuel }}</div>
+      <div>{{ filter_form.transmission }}</div>
+      <div>{{ filter_form.year }}</div>
+      <div>
+        <button class="ds-btn ds-btn--dark ds-filterBtn" type="submit">{% if request.session.ui_lang == 'ar' %}تصفية{% else %}Filter{% endif %}</button>
+      </div>
+    </div>
+
+    <div class="ds-filters" style="margin-top: 10px; grid-template-columns: repeat(4, minmax(0, 1fr));">
+      <div>{{ filter_form.brand }}</div>
+      <div>{{ filter_form.model }}</div>
+      <div></div>
+      <div>
+        <a class="ds-btn ds-btn--ghost ds-filterBtn" href="/vehicles/">{% if request.session.ui_lang == 'ar' %}إعادة ضبط{% else %}Reset{% endif %}</a>
+      </div>
+    </div>
+  </form>
+
+  <div class="ds-tableWrap" style="margin-top: 12px;">
+    <table class="ds-table">
+      <thead>
+        <tr>
+          <th>{% if request.session.ui_lang == 'ar' %}رقم اللوحة{% else %}Plate Number{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الماركة / الطراز{% else %}Brand / Model{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}السنة{% else %}Year{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الفئة{% else %}Category{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}ناقل الحركة{% else %}Transmission{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الوقود{% else %}Fuel{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}اللون{% else %}Color{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+          <th class="ds-right">{% if request.session.ui_lang == 'ar' %}السعر اليومي{% else %}Daily Rate{% endif %}</th>
+          <th class="ds-actions-col" style="width: 260px;">{% if request.session.ui_lang == 'ar' %}الإجراءات{% else %}Actions{% endif %}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for v in vehicles %}
+          <tr>
+            <td>{{ v.plate_number }}</td>
+            <td>{{ v.brand.name }} {{ v.model.name }}</td>
+            <td>{{ v.year }}</td>
+            <td>{{ v.category.name }}</td>
+            <td>{{ v.transmission }}</td>
+            <td>{{ v.fuel }}</td>
+            <td>{{ v.color }}</td>
+            <td><span class="ds-badge ds-badge--{{ v.status|lower }}">{{ v.status }}</span></td>
+            <td class="ds-right">{{ ds_business.currency_symbol }} {{ v.daily_rate }}</td>
+            <td>
+              <a class="ds-link" href="/vehicles/{{ v.id }}/documents/">{% if request.session.ui_lang == 'ar' %}رفع / عرض المستندات{% else %}Upload / View Docs{% endif %}</a>
+              <span class="ds-dot">•</span>
+              <a class="ds-link" href="/vehicles/{{ v.id }}/photos/">{% if request.session.ui_lang == 'ar' %}الصور{% else %}Photos{% endif %}</a>
+              {% if request.user|has_perm:'fleet.manage' %}
+                <span class="ds-dot">•</span>
+                <a class="ds-link" href="/vehicles/{{ v.id }}/edit/">{% if request.session.ui_lang == 'ar' %}تعديل{% else %}Edit{% endif %}</a>
+                <span class="ds-dot">•</span>
+                <a class="ds-link" href="/vehicles/{{ v.id }}/delete/">{% if request.session.ui_lang == 'ar' %}حذف{% else %}Delete{% endif %}</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="10" class="ds-empty">{% if request.session.ui_lang == 'ar' %}لا توجد مركبات.{% else %}No Vehicles Found.{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

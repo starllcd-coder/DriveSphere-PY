@@ -1,0 +1,137 @@
+{% extends "print/_base.html" %}
+{% block content %}
+{% if request.session.ui_lang == 'ar' %}
+<style>
+  .report-spacer { height: 32mm !important; }
+  .page { direction: rtl; }
+  table, th, td { direction: rtl; }
+  th, td { text-align: right; }
+  .muted { text-align: center; }
+</style>
+{% else %}
+<style>
+  .report-spacer { height: 32mm !important; }
+</style>
+{% endif %}
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}تقرير العملاء{% else %}Customers Report{% endif %}</h2>
+  <table>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}الفترة{% else %}Period{% endif %}</th>
+      <td>{{ data.period }}</td>
+      <th>{% if request.session.ui_lang == 'ar' %}من{% else %}From{% endif %}</th>
+      <td>{{ data.date_from }}</td>
+      <th>{% if request.session.ui_lang == 'ar' %}إلى{% else %}To{% endif %}</th>
+      <td>{{ data.date_to }}</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}العملاء الجدد{% else %}New Customers{% endif %}</h2>
+  <table>
+    <tr><th>{% if request.session.ui_lang == 'ar' %}العدد{% else %}Count{% endif %}</th><td>{{ data.new_customers }}</td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}أهم العملاء{% else %}Top Customers{% endif %}</h2>
+  <table>
+    <tr><th>{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</th><th>{% if request.session.ui_lang == 'ar' %}الحجوزات{% else %}Bookings{% endif %}</th></tr>
+    {% for row in data.top_customers %}
+      <tr><td>{{ row.name }}</td><td>{{ row.bookings }}</td></tr>
+    {% empty %}
+      <tr><td colspan="2" class="muted">{% if request.session.ui_lang == 'ar' %}لا توجد بيانات عملاء.{% else %}No customers data.{% endif %}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}جميع العملاء{% else %}All Customers{% endif %}</h2>
+  <table>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}نوع الهوية{% else %}ID Type{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}رقم الهوية{% else %}ID Number{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}الهاتف{% else %}Phone{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}البريد{% else %}Email{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Address{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}رقم الرخصة{% else %}License Number{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}جهة الإصدار{% else %}License Issuer{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}تاريخ الإصدار{% else %}License Issue{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}تاريخ الانتهاء{% else %}License Expiry{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}نشط{% else %}Active{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}تاريخ الإنشاء{% else %}Created{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}تاريخ التحديث{% else %}Updated{% endif %}</th>
+    </tr>
+    {% for c in customers %}
+      {% if request.session.ui_lang == 'ar' %}
+        {# Arabic: page1 = header + 3 data rows (4 total); subsequent pages = header + 7 data rows (8 total) #}
+        {% if forloop.counter0 == 3 or forloop.counter0|add:"-3"|divisibleby:"7" %}
+          </table>
+          <div class="page-break" aria-hidden="true"><div class="header-spacer report-spacer" aria-hidden="true"></div></div>
+          <table style="margin-top:18mm;">
+            <tr>
+              <th>{% if request.session.ui_lang == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}نوع الهوية{% else %}ID Type{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}رقم الهوية{% else %}ID Number{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}الهاتف{% else %}Phone{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}البريد{% else %}Email{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Address{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}رقم الرخصة{% else %}License Number{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}جهة الإصدار{% else %}License Issuer{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}تاريخ الإصدار{% else %}License Issue{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}تاريخ الانتهاء{% else %}License Expiry{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}نشط{% else %}Active{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}تاريخ الإنشاء{% else %}Created{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}تاريخ التحديث{% else %}Updated{% endif %}</th>
+            </tr>
+        {% endif %}
+      {% else %}
+        {% if forloop.counter0 == 8 or forloop.counter0|add:"-8"|divisibleby:"16" %}
+          </table>
+          <div class="page-break" aria-hidden="true"><div class="header-spacer report-spacer" aria-hidden="true"></div></div>
+          <table style="margin-top:18mm;">
+            <tr>
+              <th>{% if request.session.ui_lang == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}نوع الهوية{% else %}ID Type{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}رقم الهوية{% else %}ID Number{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}الهاتف{% else %}Phone{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}البريد{% else %}Email{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Address{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}رقم الرخصة{% else %}License Number{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}جهة الإصدار{% else %}License Issuer{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}تاريخ الإصدار{% else %}License Issue{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}تاريخ الانتهاء{% else %}License Expiry{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}نشط{% else %}Active{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}تاريخ الإنشاء{% else %}Created{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}تاريخ التحديث{% else %}Updated{% endif %}</th>
+            </tr>
+        {% endif %}
+      {% endif %}
+      <tr>
+        <td>{{ c.name }}</td>
+        <td>{{ c.id_type }}</td>
+        <td>{{ c.id_number }}</td>
+        <td>{{ c.phone_number }}</td>
+        <td>{{ c.email }}</td>
+        <td>{{ c.address }}</td>
+        <td>{{ c.license_number }}</td>
+        <td>{{ c.license_issuer }}</td>
+        <td>{{ c.license_issue_date }}</td>
+        <td>{{ c.license_expiry_date }}</td>
+        <td>{{ c.notes }}</td>
+        <td>{% if c.is_active %}{% if request.session.ui_lang == 'ar' %}نعم{% else %}Yes{% endif %}{% else %}{% if request.session.ui_lang == 'ar' %}لا{% else %}No{% endif %}{% endif %}</td>
+        <td>{{ c.created_at }}</td>
+        <td>{{ c.updated_at }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="14" class="muted">{% if request.session.ui_lang == 'ar' %}لا يوجد عملاء.{% else %}No customers.{% endif %}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

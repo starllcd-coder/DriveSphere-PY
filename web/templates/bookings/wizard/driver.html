@@ -1,0 +1,90 @@
+{% extends "bookings/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}سائقون إضافيون{% else %}Additional Drivers{% endif %}</h3>
+
+<form method="post" class="ds-form">
+  {% csrf_token %}
+
+  <div class="ds-toolbar" style="margin-bottom:12px;">
+      <div class="ds-toolbar__left">
+      <button class="ds-btn" type="button" id="add-driver">{% if request.session.ui_lang == 'ar' %}إضافة سائق{% else %}Add Driver{% endif %}</button>
+      <button class="ds-btn ds-btn--danger" type="button" id="remove-driver">{% if request.session.ui_lang == 'ar' %}إزالة سائق{% else %}Remove Driver{% endif %}</button>
+    </div>
+  </div>
+
+  <div id="driver-list">
+    {% if data.drivers %}
+      {% for d in data.drivers %}
+        <div class="ds-driverCard" data-driver-index="{{ forloop.counter }}">
+          <div class="ds-formGrid">
+            <input class="ds-input" name="driver_name_{{ forloop.counter }}" placeholder="{% if request.session.ui_lang == 'ar' %}اسم السائق{% else %}Driver Name{% endif %}" value="{{ d.name|default:'' }}">
+            <input class="ds-input" name="driver_phone_{{ forloop.counter }}" placeholder="{% if request.session.ui_lang == 'ar' %}هاتف السائق{% else %}Driver Phone{% endif %}" value="{{ d.phone_number|default:'' }}">
+            <input class="ds-input" name="driver_id_{{ forloop.counter }}" placeholder="{% if request.session.ui_lang == 'ar' %}رقم هوية السائق{% else %}Driver ID Number{% endif %}" value="{{ d.id_number|default:'' }}">
+            <input class="ds-input" name="driver_license_{{ forloop.counter }}" placeholder="{% if request.session.ui_lang == 'ar' %}رقم رخصة السائق{% else %}Driver License Number{% endif %}" value="{{ d.license_number|default:'' }}">
+            <input class="ds-input" name="driver_expiry_{{ forloop.counter }}" type="date" value="{{ d.license_expiry_date|default:'' }}">
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="ds-driverCard" data-driver-index="1">
+        <div class="ds-formGrid">
+          <input class="ds-input" name="driver_name_1" placeholder="{% if request.session.ui_lang == 'ar' %}اسم السائق{% else %}Driver Name{% endif %}" value="">
+          <input class="ds-input" name="driver_phone_1" placeholder="{% if request.session.ui_lang == 'ar' %}هاتف السائق{% else %}Driver Phone{% endif %}" value="">
+          <input class="ds-input" name="driver_id_1" placeholder="{% if request.session.ui_lang == 'ar' %}رقم هوية السائق{% else %}Driver ID Number{% endif %}" value="">
+          <input class="ds-input" name="driver_license_1" placeholder="{% if request.session.ui_lang == 'ar' %}رقم رخصة السائق{% else %}Driver License Number{% endif %}" value="">
+          <input class="ds-input" name="driver_expiry_1" type="date" value="">
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn ds-btn--ghost" href="{{ wizard_base }}/customer/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+  </div>
+</form>
+{% endblock %}
+
+{% block wizard_js %}
+<script>
+  (function () {
+    const list = document.getElementById("driver-list");
+    const addBtn = document.getElementById("add-driver");
+    const removeBtn = document.getElementById("remove-driver");
+    if (!list || !addBtn || !removeBtn) return;
+
+    function makeRow(index) {
+      const wrap = document.createElement("div");
+      wrap.className = "ds-driverCard";
+      wrap.setAttribute("data-driver-index", String(index));
+      wrap.innerHTML = `
+        <div class="ds-formGrid">
+          <input class="ds-input" name="driver_name_${index}" placeholder="Driver Name" value="">
+          <input class="ds-input" name="driver_phone_${index}" placeholder="Driver Phone" value="">
+          <input class="ds-input" name="driver_id_${index}" placeholder="Driver ID Number" value="">
+          <input class="ds-input" name="driver_license_${index}" placeholder="Driver License Number" value="">
+          <input class="ds-input" name="driver_expiry_${index}" type="date" value="">
+        </div>
+      `;
+      return wrap;
+    }
+
+    function nextIndex() {
+      const items = Array.from(list.querySelectorAll("[data-driver-index]"));
+      const indexes = items.map(i => parseInt(i.getAttribute("data-driver-index"), 10)).filter(n => !Number.isNaN(n));
+      return (indexes.length ? Math.max(...indexes) : 0) + 1;
+    }
+
+    addBtn.addEventListener("click", () => {
+      list.appendChild(makeRow(nextIndex()));
+    });
+
+    removeBtn.addEventListener("click", () => {
+      const items = list.querySelectorAll("[data-driver-index]");
+      if (items.length <= 1) return;
+      items[items.length - 1].remove();
+    });
+  })();
+</script>
+{% endblock %}

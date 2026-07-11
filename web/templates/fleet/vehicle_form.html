@@ -1,0 +1,150 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}{% if mode == "create" %}إضافة مركبة جديدة{% else %}تعديل المركبة{% endif %}{% else %}{% if mode == "create" %}Add New Vehicle{% else %}Edit Vehicle{% endif %}{% endif %}{% endblock %}
+
+{% block content %}
+  <div class="ds-card ds-card--wide">
+    <div class="ds-card__head">
+      <div>
+        <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}{% if mode == "create" %}إضافة مركبة جديدة{% else %}تعديل المركبة{% endif %}{% else %}{% if mode == "create" %}Add New Vehicle{% else %}Edit Vehicle{% endif %}{% endif %}</div>
+        <div class="ds-card__sub">{% if request.session.ui_lang == 'ar' %}تحديث تفاصيل المركبة، الحالة، والأسعار{% else %}Update vehicle details, status, and pricing{% endif %}</div>
+      </div>
+      <a class="ds-btn ds-btn--ghost" href="/vehicles/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    </div>
+
+    {% if form.errors %}
+      <div class="ds-alert ds-alert--danger">Please fix the highlighted fields.</div>
+    {% endif %}
+
+    <form method="post" class="ds-form" style="margin-top:12px;">
+      {% csrf_token %}
+      {{ form.branch }}
+      <div class="ds-formGrid">
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رقم اللوحة{% else %}Plate Number{% endif %}</label>
+          {{ form.plate_number }}
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رقم الهيكل (VIN){% else %}VIN{% endif %}</label>
+          {{ form.vin }}
+        </div>
+
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الماركة{% else %}Brand{% endif %}</label>
+          {{ form.brand }}
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الطراز{% else %}Model{% endif %}</label>
+          {{ form.model }}
+        </div>
+
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}السنة{% else %}Year{% endif %}</label>
+          {{ form.year }}
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الفئة{% else %}Category{% endif %}</label>
+          {{ form.category }}
+        </div>
+
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الوقود{% else %}Fuel{% endif %}</label>
+          {{ form.fuel }}
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ناقل الحركة{% else %}Transmission{% endif %}</label>
+          {{ form.transmission }}
+        </div>
+
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}اللون{% else %}Color{% endif %}</label>
+          {{ form.color }}
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}عدد المقاعد{% else %}Seats{% endif %}</label>
+          {{ form.seats }}
+        </div>
+
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}عداد المسافات (كم){% else %}Odometer (Km){% endif %}</label>
+          {{ form.odometer_km }}
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}فاصل الصيانة (كم){% else %}Service Interval (Km){% endif %}</label>
+          {{ form.service_interval_km }}
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</label>
+          {{ form.status }}
+        </div>
+
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}السعر اليومي{% else %}Daily Rate{% endif %}</label>
+          {{ form.daily_rate }}
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}التأمين{% else %}Deposit{% endif %}</label>
+          {{ form.deposit }}
+        </div>
+
+        <div class="ds-field" style="grid-column:1/-1;">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}العلامات{% else %}Tags{% endif %}</label>
+          {{ form.tags }}
+        </div>
+        <div class="ds-field" style="grid-column:1/-1;">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</label>
+          {{ form.notes }}
+        </div>
+
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}انتهاء التسجيل{% else %}Registration Expiry{% endif %}</label>
+          {{ form.registration_expiry }}
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}انتهاء التأمين{% else %}Insurance Expiry{% endif %}</label>
+          {{ form.insurance_expiry }}
+        </div>
+      </div>
+
+      <div class="ds-wizard__actions" style="margin-top:12px;">
+        <a class="ds-btn ds-btn--ghost" href="/vehicles/">{% if request.session.ui_lang == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+        <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    (function () {
+      const brand = document.getElementById("vf-brand");
+      const model = document.getElementById("vf-model");
+      if (!brand || !model) return;
+
+      async function loadModels(brandId, selectedId) {
+        model.innerHTML = "";
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "{% if request.session.ui_lang == 'ar' %}اختر الطراز{% else %}Select Model{% endif %}";
+        model.appendChild(placeholder);
+        if (!brandId) return;
+        const res = await fetch(`/api/vehicle-models/?brand_id=${encodeURIComponent(brandId)}`, {
+          headers: { "X-Requested-With": "XMLHttpRequest" }
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!data.ok) return;
+        (data.results || []).forEach((m) => {
+          const opt = document.createElement("option");
+          opt.value = String(m.id);
+          opt.textContent = m.name;
+          if (selectedId && String(selectedId) === String(m.id)) opt.selected = true;
+          model.appendChild(opt);
+        });
+      }
+
+      const selectedModel = model.value;
+      if (brand.value && model.options.length <= 1) {
+        loadModels(brand.value, selectedModel);
+      }
+
+      brand.addEventListener("change", () => loadModels(brand.value, null));
+    })();
+  </script>
+{% endblock %}

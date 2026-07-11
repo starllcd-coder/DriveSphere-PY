@@ -1,0 +1,30 @@
+<div class="ds-modal" id="newPayment">
+  <div class="ds-modal__dialog">
+
+    <div class="ds-modal__head">
+      <div class="ds-modal__title">New Payment</div>
+      <button class="ds-modal__close" data-close="newPayment">✕</button>
+    </div>
+
+    <div class="ds-modal__body">
+      <div class="ds-formGrid">
+        <input class="ds-input" id="np-booking" placeholder="Booking ID">
+        <input class="ds-input" id="np-amount" placeholder="Amount">
+        <select class="ds-input" id="np-method">
+          <option>Method</option>
+          <option>CASH</option>
+          <option>CARD</option>
+          <option>BANK_TRANSFER</option>
+        </select>
+        <textarea class="ds-input" id="np-notes" placeholder="Notes"></textarea>
+      </div>
+      <input type="hidden" id="np-id" value="">
+    </div>
+
+    <div class="ds-modal__foot">
+      <button class="ds-btn" data-close="newPayment">Cancel</button>
+      <button class="ds-btn ds-btn--primary" id="np-save">Save Payment</button>
+    </div>
+
+  </div>
+</div>

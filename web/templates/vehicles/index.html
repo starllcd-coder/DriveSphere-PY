@@ -1,0 +1,150 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}المركبات{% else %}Vehicles{% endif %}{% endblock %}
+{% block page_subtitle %}{% if request.session.ui_lang == 'ar' %}إدارة أسطول المركبات، المستندات والصور{% else %}Manage Fleet Vehicles, Documents, And Photos{% endif %}{% endblock %}
+
+{% block content %}
+{% load permissions_tags %}
+<div class="ds-page" id="ds-vehicles">
+  <div class="ds-filters">
+    <input class="ds-input" id="v-plate" placeholder="{% if request.session.ui_lang == 'ar' %}رقم اللوحة{% else %}Plate Number{% endif %}">
+    <input class="ds-input" id="v-brand" placeholder="{% if request.session.ui_lang == 'ar' %}العلامة{% else %}Brand{% endif %}">
+    <input class="ds-input" id="v-model" placeholder="{% if request.session.ui_lang == 'ar' %}الموديل{% else %}Model{% endif %}">
+    <select class="ds-input" id="v-status">
+      <option value="">{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</option>
+      <option value="AVAILABLE">{% if request.session.ui_lang == 'ar' %}متاحة{% else %}Available{% endif %}</option>
+      <option value="RENTED">{% if request.session.ui_lang == 'ar' %}مستأجرة{% else %}Rented{% endif %}</option>
+      <option value="MAINTENANCE">{% if request.session.ui_lang == 'ar' %}صيانة{% else %}Maintenance{% endif %}</option>
+    </select>
+  </div>
+
+  <div class="ds-toolbar">
+    <div class="ds-toolbar__left">
+      {% if request.user|has_perm:'fleet.manage' %}
+        <button class="ds-btn ds-btn--primary" id="v-add">{% if request.session.ui_lang == 'ar' %}إضافة مركبة جديدة{% else %}Add New Vehicle{% endif %}</button>
+      {% endif %}
+      {% if request.user|has_perm:'fleet.manage' %}
+        <button class="ds-btn" id="v-docs-add" disabled>{% if request.session.ui_lang == 'ar' %}إضافة مستندات{% else %}Add Docs{% endif %}</button>
+        <button class="ds-btn" id="v-photos-add" disabled>{% if request.session.ui_lang == 'ar' %}إضافة صور{% else %}Add Photos{% endif %}</button>
+      {% endif %}
+      <button class="ds-btn" id="v-docs-view" disabled>{% if request.session.ui_lang == 'ar' %}عرض المستندات{% else %}View Docs{% endif %}</button>
+      <button class="ds-btn" id="v-photos-view" disabled>{% if request.session.ui_lang == 'ar' %}عرض الصور{% else %}View Photos{% endif %}</button>
+    </div>
+  </div>
+
+  <div class="ds-card ds-tableWrap" id="v-tableCard">
+    <table class="ds-table">
+      <thead>
+        <tr>
+          <th>{% if request.session.ui_lang == 'ar' %}اللوحة{% else %}Plate{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}العلامة / الموديل{% else %}Brand / Model{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}السنة{% else %}Year{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الفئة{% else %}Category{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}ناقل الحركة{% else %}Transmission{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الوقود{% else %}Fuel{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}اللون{% else %}Color{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}السعر اليومي{% else %}Daily Rate{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody id="v-body">
+        <tr><td colspan="9" class="ds-empty">{% if request.session.ui_lang == 'ar' %}جارٍ التحميل...{% else %}Loading...{% endif %}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ds-toolbar">
+    <div class="ds-toolbar__left">
+      {% if request.user|has_perm:'fleet.manage' %}
+        <button class="ds-btn" id="v-edit" disabled>{% if request.session.ui_lang == 'ar' %}تعديل المركبة{% else %}Edit Vehicle{% endif %}</button>
+        <button class="ds-btn ds-btn--danger" id="v-del" disabled>{% if request.session.ui_lang == 'ar' %}حذف المركبة{% else %}Delete Vehicle{% endif %}</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="ds-card ds-card--panel" id="v-telematics-card" style="margin-top:12px;">
+    <div class="ds-card__head">
+      <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}تفاصيل التتبع عن بُعد{% else %}Telematics Details{% endif %}</div>
+      <div class="ds-toolbar__left" style="gap:8px; align-items:center;">
+        <select class="ds-input ds-input--small" id="v-telematics-days" style="min-width:120px;">
+          <option value="1">{% if request.session.ui_lang == 'ar' %}آخر يوم{% else %}Last 1 day{% endif %}</option>
+          <option value="7" selected>{% if request.session.ui_lang == 'ar' %}آخر 7 أيام{% else %}Last 7 days{% endif %}</option>
+          <option value="30">{% if request.session.ui_lang == 'ar' %}آخر 30 يومًا{% else %}Last 30 days{% endif %}</option>
+        </select>
+        <button class="ds-btn ds-btn--small" id="v-telematics-refresh" disabled>{% if request.session.ui_lang == 'ar' %}تحديث{% else %}Refresh{% endif %}</button>
+      </div>
+    </div>
+    <div class="ds-muted" id="v-telematics-caption">
+      {% if request.session.ui_lang == 'ar' %}اختر مركبة من الجدول لعرض مقاييس التتبع.{% else %}Select a vehicle from the table to view telematics metrics.{% endif %}
+    </div>
+
+    <div class="ds-tabs" style="margin-top:10px;">
+      <button class="ds-tab is-active" type="button" data-telematics-tab="overview">{% if request.session.ui_lang == 'ar' %}نظرة عامة{% else %}Overview{% endif %}</button>
+      <button class="ds-tab" type="button" data-telematics-tab="trips">{% if request.session.ui_lang == 'ar' %}الرحلات{% else %}Trips{% endif %}</button>
+      <button class="ds-tab" type="button" data-telematics-tab="events">{% if request.session.ui_lang == 'ar' %}السلوك والتنبيهات{% else %}Behavior & Alerts{% endif %}</button>
+    </div>
+
+    <div class="ds-tabPanels">
+      <section class="ds-tabPanel is-active" data-telematics-panel="overview">
+        <div class="ds-grid" style="grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-top:10px; gap:10px;">
+          <div class="ds-card" style="padding:10px;"><div class="ds-muted">{% if request.session.ui_lang == 'ar' %}المسافة{% else %}Distance{% endif %}</div><div id="v-t-distance" style="font-weight:700; font-size:20px;">--</div></div>
+          <div class="ds-card" style="padding:10px;"><div class="ds-muted">{% if request.session.ui_lang == 'ar' %}متوسط السرعة{% else %}Avg Speed{% endif %}</div><div id="v-t-speed" style="font-weight:700; font-size:20px;">--</div></div>
+          <div class="ds-card" style="padding:10px;"><div class="ds-muted">{% if request.session.ui_lang == 'ar' %}زمن التوقف{% else %}Idle Time{% endif %}</div><div id="v-t-idle" style="font-weight:700; font-size:20px;">--</div></div>
+          <div class="ds-card" style="padding:10px;"><div class="ds-muted">{% if request.session.ui_lang == 'ar' %}متوسط الوقود{% else %}Avg Fuel{% endif %}</div><div id="v-t-fuel" style="font-weight:700; font-size:20px;">--</div></div>
+          <div class="ds-card" style="padding:10px;"><div class="ds-muted">{% if request.session.ui_lang == 'ar' %}استهلاك الوقود{% else %}Fuel Used{% endif %}</div><div id="v-t-fuel-used" style="font-weight:700; font-size:20px;">--</div></div>
+          <div class="ds-card" style="padding:10px;"><div class="ds-muted">{% if request.session.ui_lang == 'ar' %}كفاءة الوقود{% else %}Fuel Efficiency{% endif %}</div><div id="v-t-efficiency" style="font-weight:700; font-size:20px;">--</div></div>
+          <div class="ds-card" style="padding:10px;"><div class="ds-muted">{% if request.session.ui_lang == 'ar' %}عدد الإشارات{% else %}Pings{% endif %}</div><div id="v-t-pings" style="font-weight:700; font-size:20px;">--</div></div>
+        </div>
+        <div class="ds-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top:10px; gap:10px;">
+          <div class="ds-card" style="padding:10px;">
+            <div class="ds-muted">{% if request.session.ui_lang == 'ar' %}الموقع الحالي{% else %}Current GPS{% endif %}</div>
+            <div id="v-t-latest-gps" style="font-weight:700;">--</div>
+            <a id="v-t-map-link" target="_blank" rel="noopener noreferrer" class="ds-link" style="display:none;">{% if request.session.ui_lang == 'ar' %}فتح الخريطة{% else %}Open Map{% endif %}</a>
+          </div>
+          <div class="ds-card" style="padding:10px;">
+            <div class="ds-muted">{% if request.session.ui_lang == 'ar' %}المحرك{% else %}Engine{% endif %}</div>
+            <div id="v-t-engine" style="font-weight:700;">--</div>
+            <div class="ds-muted" id="v-t-engine-updated"></div>
+          </div>
+          <div class="ds-card" style="padding:10px;">
+            <div class="ds-muted">{% if request.session.ui_lang == 'ar' %}البطارية{% else %}Battery{% endif %}</div>
+            <div id="v-t-battery" style="font-weight:700;">--</div>
+            <div class="ds-muted" id="v-t-faults"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ds-tabPanel" data-telematics-panel="trips">
+        <div class="ds-tableWrap" style="margin-top:10px;">
+          <table class="ds-table">
+            <thead>
+              <tr>
+                <th>{% if request.session.ui_lang == 'ar' %}البداية{% else %}Start{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}النهاية{% else %}End{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}المسافة{% else %}Distance{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}المدة{% else %}Duration{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}أقصى سرعة{% else %}Max Speed{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}استهلاك الوقود{% else %}Fuel Used{% endif %}</th>
+              </tr>
+            </thead>
+            <tbody id="v-t-trips-body"><tr><td colspan="6" class="ds-empty">--</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="ds-tabPanel" data-telematics-panel="events">
+        <div class="ds-grid" style="grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-top:10px; gap:10px;">
+          <div class="ds-card" style="padding:10px;"><div class="ds-muted">{% if request.session.ui_lang == 'ar' %}تجاوز السرعة{% else %}Overspeed{% endif %}</div><div id="v-t-overspeed" style="font-weight:700; font-size:20px;">--</div></div>
+          <div class="ds-card" style="padding:10px;"><div class="ds-muted">{% if request.session.ui_lang == 'ar' %}فرملة حادة{% else %}Harsh Brakes{% endif %}</div><div id="v-t-brake" style="font-weight:700; font-size:20px;">--</div></div>
+          <div class="ds-card" style="padding:10px;"><div class="ds-muted">{% if request.session.ui_lang == 'ar' %}تسارع حاد{% else %}Harsh Accel{% endif %}</div><div id="v-t-accel" style="font-weight:700; font-size:20px;">--</div></div>
+          <div class="ds-card" style="padding:10px;"><div class="ds-muted">{% if request.session.ui_lang == 'ar' %}إنذارات البطارية{% else %}Low Battery Events{% endif %}</div><div id="v-t-low-battery" style="font-weight:700; font-size:20px;">--</div></div>
+        </div>
+        <div class="ds-muted" id="v-t-fault-list" style="margin-top:8px;"></div>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/vehicles_live.js" defer></script>
+{% endblock %}

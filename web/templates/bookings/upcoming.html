@@ -1,0 +1,41 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}الحجوزات القادمة{% else %}Upcoming Bookings{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page" id="ds-upcoming-bookings">
+
+  <div class="ds-toolbar">
+    <div class="ds-toolbar__left">
+      <a class="ds-btn" href="/bookings/">{% if request.session.ui_lang == 'ar' %}عودة{% else %}Back{% endif %}</a>
+    </div>
+    <div class="ds-toolbar__right">
+      <input class="ds-input" id="u-q" placeholder="{% if request.session.ui_lang == 'ar' %}ابحث بالعميل أو الهاتف أو اللوحة{% else %}Search Customer, Phone, Plate{% endif %}" style="min-width:260px;">
+    </div>
+  </div>
+
+  <div class="ds-card ds-tableWrap">
+    <table class="ds-table">
+      <thead>
+        <tr>
+          <th>{% if request.session.ui_lang == 'ar' %}الهوية{% else %}ID{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}اسم العميل{% else %}Customer Name{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}تاريخ الاستلام{% else %}Pickup Date{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}تاريخ الإرجاع{% else %}Return Date{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}المبلغ الإجمالي{% else %}Total Amount{% endif %}</th>
+          <th class="ds-actions-col">{% if request.session.ui_lang == 'ar' %}الإجراءات{% else %}Actions{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody id="u-body">
+        <tr><td colspan="8" class="ds-empty">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/bookings_live.js" defer></script>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base/_app_shell.html" %}
+{% load permissions_tags %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}الحجز #{{ booking.id }}{% else %}Booking #{{ booking.id }}{% endif %}{% endblock %}
+{% block page_subtitle %}{{ booking.customer.name }} - {{ booking.vehicle.brand.name }} {{ booking.vehicle.model.name }} {{ booking.vehicle.plate_number }}{% endblock %}
+
+{% block content %}
+<div class="ds-page">
+  <div class="ds-card ds-card--panel">
+    <div class="ds-card__head">
+      <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}نظرة عامة{% else %}Overview{% endif %}</div>
+      <div class="ds-card__actions">
+        <a class="ds-btn" href="/bookings/">{% if request.session.ui_lang == 'ar' %}العودة إلى الحجوزات{% else %}Back to Bookings{% endif %}</a>
+        {% if booking.status == "CHECKED_OUT" and request.user|has_perm:'bookings.return' %}
+          <a class="ds-btn ds-btn--primary" href="/bookings/{{ booking.id }}/return/">{% if request.session.ui_lang == 'ar' %}إتمام الإرجاع{% else %}Finalize Return{% endif %}</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="ds-formGrid">
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</label>
+        <input class="ds-input" value="{{ booking.status }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الرقم المرجعي{% else %}Reference{% endif %}</label>
+        <input class="ds-input" value="{{ booking.reference|default:'#' }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}تاريخ الاستلام{% else %}Pickup Date{% endif %}</label>
+        <input class="ds-input" value="{{ booking.pickup_date }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}تاريخ الإرجاع{% else %}Return Date{% endif %}</label>
+        <input class="ds-input" value="{{ booking.return_date }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</label>
+        <input class="ds-input" value="{{ booking.customer.name }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</label>
+        <input class="ds-input" value="{{ booking.vehicle.brand.name }} {{ booking.vehicle.model.name }} {{ booking.vehicle.plate_number }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}المبلغ الإجمالي{% else %}Total Amount{% endif %}</label>
+        <input class="ds-input" value="{{ booking.currency_symbol|default:booking.currency_code }} {{ booking.total_amount }}" disabled>
+      </div>
+      <div class="ds-field">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الوديعة{% else %}Deposit{% endif %}</label>
+        <input class="ds-input" value="{{ booking.currency_symbol|default:booking.currency_code }} {{ booking.deposit_amount }}" disabled>
+      </div>
+    </div>
+
+    {% if booking.notes %}
+      <div class="ds-divider"></div>
+      <div class="ds-field" style="margin-top:12px;">
+        <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</label>
+        <textarea class="ds-input" rows="3" disabled>{{ booking.notes }}</textarea>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="ds-card" style="margin-top:12px;">
+    <div class="ds-card__head">
+      <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}المستندات{% else %}Documents{% endif %}</div>
+    </div>
+    <div class="ds-card__body" style="display:flex; flex-wrap:wrap; gap:10px;">
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking.id }}/invoice/">{% if request.session.ui_lang == 'ar' %}فاتورة{% else %}Invoice{% endif %}</a>
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking.id }}/agreement/">{% if request.session.ui_lang == 'ar' %}اتفاقية{% else %}Agreement{% endif %}</a>
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking.id }}/confirmation/">{% if request.session.ui_lang == 'ar' %}تأكيد{% else %}Confirmation{% endif %}</a>
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking.id }}/quotation/">{% if request.session.ui_lang == 'ar' %}عرض سعر{% else %}Quotation{% endif %}</a>
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking.id }}/handover-checklist/">{% if request.session.ui_lang == 'ar' %}قائمة فحص التسليم{% else %}Handover Checklist{% endif %}</a>
+      <a class="ds-btn ds-btn--doc" target="_blank" href="/print/bookings/{{ booking.id }}/return-report/">{% if request.session.ui_lang == 'ar' %}تقرير الإرجاع{% else %}Return Report{% endif %}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

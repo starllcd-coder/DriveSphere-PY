@@ -1,0 +1,24 @@
+{% extends "bookings/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}تواريخ الإيجار{% else %}Rental Dates{% endif %}</h3>
+
+<form method="post" class="ds-form">
+  {% csrf_token %}
+  <div class="ds-formGrid">
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}تاريخ الاستلام{% else %}Pickup Date{% endif %}</label>
+      <input class="ds-input" name="pickup_date" type="date" value="{{ data.pickup_date|default:'' }}" required>
+    </div>
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}تاريخ الإرجاع{% else %}Return Date{% endif %}</label>
+      <input class="ds-input" name="return_date" type="date" value="{{ data.return_date|default:'' }}" required>
+    </div>
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn ds-btn--ghost" href="{{ wizard_base }}/driver/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

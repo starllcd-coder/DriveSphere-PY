@@ -1,0 +1,67 @@
+{% extends "base/_app_shell.html" %}
+{% load permissions_tags %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}مستندات العميل{% else %}Customer Documents{% endif %}{% endblock %}
+
+{% block content %}
+  <div class="ds-card ds-card--wide">
+    <div class="ds-card__head">
+      <div>
+        <div class="ds-card__title">{{ customer.name }} {% if request.session.ui_lang == 'ar' %}مستندات{% else %}Documents{% endif %}</div>
+        <div class="ds-card__sub">{{ customer.phone_number|default:"-" }} · {{ customer.id_number|default:"-" }}</div>
+      </div>
+      <a class="ds-btn ds-btn--ghost" href="/customers/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    </div>
+
+    {% if request.user|has_perm:'customers.manage' %}
+      {% if error %}
+        <div class="ds-alert ds-alert--danger">{{ error }}</div>
+      {% endif %}
+      <form method="post" enctype="multipart/form-data" class="ds-form" style="margin-top:12px;">
+        {% csrf_token %}
+        <div class="ds-formGrid">
+          <div class="ds-field">
+            <label class="ds-label">{% if request.session.ui_lang == 'ar' %}نوع المستند{% else %}Document Type{% endif %}</label>
+              <select class="ds-input" name="doc_type">
+                <option value="ID">{% if request.session.ui_lang == 'ar' %}هوية{% else %}Id{% endif %}</option>
+                <option value="LICENSE">{% if request.session.ui_lang == 'ar' %}رخصة{% else %}License{% endif %}</option>
+                <option value="PASSPORT">{% if request.session.ui_lang == 'ar' %}جواز سفر{% else %}Passport{% endif %}</option>
+                <option value="OTHER">{% if request.session.ui_lang == 'ar' %}أخرى{% else %}Other{% endif %}</option>
+              </select>
+          </div>
+            <div class="ds-field">
+              <label class="ds-label">{% if request.session.ui_lang == 'ar' %}تاريخ الانتهاء{% else %}Expiry Date{% endif %}</label>
+              <input class="ds-input" name="expiry_date" type="date">
+            </div>
+            <div class="ds-field" style="grid-column:1/-1;">
+              <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</label>
+              <input class="ds-input" name="notes" placeholder="{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}">
+            </div>
+            <div class="ds-field" style="grid-column:1/-1;">
+              <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ملف{% else %}File{% endif %}</label>
+              <input class="ds-input" name="file" type="file" required>
+            </div>
+        </div>
+        <div class="ds-wizard__actions" style="margin-top:12px;">
+            <a class="ds-btn ds-btn--ghost" href="/customers/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+            <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+        </div>
+      </form>
+    {% endif %}
+
+    <div style="margin-top: 14px;" class="ds-table">
+      <div class="ds-table__row ds-table__row--head" style="grid-template-columns: 1fr 1fr 1fr;">
+        <div>{% if request.session.ui_lang == 'ar' %}النوع{% else %}Type{% endif %}</div><div>{% if request.session.ui_lang == 'ar' %}انتهاء{% else %}Expiry{% endif %}</div><div>{% if request.session.ui_lang == 'ar' %}ملف{% else %}File{% endif %}</div>
+      </div>
+
+      {% for d in customer.documents.all %}
+        <div class="ds-table__row" style="grid-template-columns: 1fr 1fr 1fr;">
+          <div>{{ d.get_doc_type_display }}</div>
+          <div>{{ d.expiry_date|default:"-" }}</div>
+          <div><a class="ds-link" href="{{ d.file.url }}" target="_blank">{% if request.session.ui_lang == 'ar' %}فتح{% else %}Open{% endif %}</a></div>
+        </div>
+      {% empty %}
+        <div class="ds-muted" style="padding: 12px;">{% if request.session.ui_lang == 'ar' %}لا توجد مستندات مرفوعة.{% else %}No Documents Uploaded.{% endif %}</div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

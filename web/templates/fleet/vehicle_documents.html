@@ -1,0 +1,62 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}مستندات المركبة{% else %}Vehicle Documents{% endif %}{% endblock %}
+
+{% block content %}
+{% load permissions_tags %}
+  <div class="ds-card ds-card--wide">
+    <div class="ds-card__head">
+      <div>
+        <div class="ds-card__title">{{ vehicle.plate_number }} {% if request.session.ui_lang == 'ar' %}مستندات{% else %}Documents{% endif %}</div>
+        <div class="ds-card__sub">{{ vehicle.brand.name }} {{ vehicle.model.name }}</div>
+      </div>
+      <a class="ds-btn ds-btn--ghost" href="/vehicles/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    </div>
+
+    {% if request.user|has_perm:'fleet.manage' %}
+      {% if error %}
+        <div class="ds-alert ds-alert--danger">{{ error }}</div>
+      {% endif %}
+      <form method="post" enctype="multipart/form-data" class="ds-form" style="margin-top:12px;">
+        {% csrf_token %}
+        <div class="ds-formGrid">
+          <div class="ds-field">
+            <label class="ds-label">{% if request.session.ui_lang == 'ar' %}نوع المستند{% else %}Document Type{% endif %}</label>
+              {{ form.doc_type }}
+          </div>
+          <div class="ds-field">
+              <label class="ds-label">{% if request.session.ui_lang == 'ar' %}تاريخ الانتهاء{% else %}Expiry Date{% endif %}</label>
+              {{ form.expiry_date }}
+          </div>
+          <div class="ds-field" style="grid-column:1/-1;">
+              <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</label>
+              {{ form.notes }}
+          </div>
+            <div class="ds-field" style="grid-column:1/-1;">
+              <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ملف{% else %}File{% endif %}</label>
+              {{ form.file }}
+            </div>
+        </div>
+        <div class="ds-wizard__actions" style="margin-top:12px;">
+            <a class="ds-btn ds-btn--ghost" href="/vehicles/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+            <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+        </div>
+      </form>
+    {% endif %}
+
+    <div style="margin-top: 14px;" class="ds-table">
+      <div class="ds-table__row ds-table__row--head" style="grid-template-columns: 1fr 1fr 1fr;">
+        <div>{% if request.session.ui_lang == 'ar' %}النوع{% else %}Type{% endif %}</div><div>{% if request.session.ui_lang == 'ar' %}انتهاء{% else %}Expiry{% endif %}</div><div>{% if request.session.ui_lang == 'ar' %}ملف{% else %}File{% endif %}</div>
+      </div>
+
+      {% for d in vehicle.documents.all %}
+        <div class="ds-table__row" style="grid-template-columns: 1fr 1fr 1fr;">
+          <div>{{ d.get_doc_type_display }}</div>
+          <div>{{ d.expiry_date|default:"-" }}</div>
+          <div><a class="ds-link" href="{{ d.file.url }}" target="_blank">{% if request.session.ui_lang == 'ar' %}فتح{% else %}Open{% endif %}</a></div>
+        </div>
+      {% empty %}
+        <div class="ds-muted" style="padding: 12px;">{% if request.session.ui_lang == 'ar' %}لا توجد مستندات مرفوعة.{% else %}No Documents Uploaded.{% endif %}</div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

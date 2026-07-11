@@ -1,0 +1,49 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}صور المركبة{% else %}Vehicle Photos{% endif %}{% endblock %}
+
+{% block content %}
+{% load permissions_tags %}
+  <div class="ds-card ds-card--wide">
+    <div class="ds-card__head">
+      <div>
+        <div class="ds-card__title">{{ vehicle.plate_number }} {% if request.session.ui_lang == 'ar' %}الصور{% else %}Photos{% endif %}</div>
+        <div class="ds-card__sub">{{ vehicle.brand.name }} {{ vehicle.model.name }}</div>
+      </div>
+      <a class="ds-btn ds-btn--ghost" href="/vehicles/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    </div>
+
+    {% if request.user|has_perm:'fleet.manage' %}
+      {% if error %}
+        <div class="ds-alert ds-alert--danger">{{ error }}</div>
+      {% endif %}
+      <form method="post" enctype="multipart/form-data" class="ds-form" style="margin-top:12px;">
+        {% csrf_token %}
+        <div class="ds-formGrid">
+          <div class="ds-field" style="grid-column:1/-1;">
+            <label class="ds-label">{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Caption{% endif %}</label>
+              {{ form.caption }}
+          </div>
+          <div class="ds-field" style="grid-column:1/-1;">
+              <label class="ds-label">{% if request.session.ui_lang == 'ar' %}صورة{% else %}Photo{% endif %}</label>
+              {{ form.image }}
+          </div>
+        </div>
+        <div class="ds-wizard__actions" style="margin-top:12px;">
+            <a class="ds-btn ds-btn--ghost" href="/vehicles/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+            <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+        </div>
+      </form>
+    {% endif %}
+
+    <div style="margin-top: 14px; display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px;">
+      {% for p in vehicle.photos.all %}
+        <div class="ds-card" style="padding: 10px;">
+          <img src="{{ p.image.url }}" alt="" style="width:100%; height:160px; object-fit:cover; border-radius: 16px;">
+          <div class="ds-muted" style="margin-top: 8px;">{{ p.caption|default:"" }}</div>
+        </div>
+      {% empty %}
+        <div class="ds-muted">{% if request.session.ui_lang == 'ar' %}لا توجد صور مرفوعة.{% else %}No Photos Uploaded.{% endif %}</div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

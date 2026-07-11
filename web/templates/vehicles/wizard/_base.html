@@ -1,0 +1,19 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}مركبة جديدة{% else %}New Vehicle{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page" id="ds-vehicle-wizard">
+  <div class="ds-wizard">
+    <div class="ds-wizard__steps">
+      <div class="ds-step {% if step == 1 %}is-active{% endif %}">{% if request.session.ui_lang == 'ar' %}التفاصيل{% else %}Details{% endif %}</div>
+      <div class="ds-step {% if step == 2 %}is-active{% endif %}">{% if request.session.ui_lang == 'ar' %}المواصفات{% else %}Specs{% endif %}</div>
+      <div class="ds-step {% if step == 3 %}is-active{% endif %}">{% if request.session.ui_lang == 'ar' %}التسعير{% else %}Pricing{% endif %}</div>
+      <div class="ds-step {% if step == 4 %}is-active{% endif %}">{% if request.session.ui_lang == 'ar' %}المستندات{% else %}Documents{% endif %}</div>
+    </div>
+
+    <div class="ds-card ds-card--panel ds-wizard__panel">
+      {% block wizard_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

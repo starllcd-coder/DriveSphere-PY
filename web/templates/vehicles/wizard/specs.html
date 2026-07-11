@@ -1,0 +1,58 @@
+{% extends "vehicles/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}المواصفات{% else %}Specifications{% endif %}</h3>
+
+<form method="post" class="ds-form">
+  {% csrf_token %}
+  <div class="ds-formGrid">
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الفئة{% else %}Category{% endif %}</label>
+      <select class="ds-input" name="category_id">
+        <option value="">{% if request.session.ui_lang == 'ar' %}اختر الفئة{% else %}Select Category{% endif %}</option>
+        {% for c in categories %}
+          <option value="{{ c.id }}" {% if data.category_id|default:'' == c.id|stringformat:'s' %}selected{% endif %}>{{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الوقود{% else %}Fuel{% endif %}</label>
+      <select class="ds-input" name="fuel">
+        <option value="PETROL" {% if data.fuel == 'PETROL' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}بنزين{% else %}Petrol{% endif %}</option>
+        <option value="DIESEL" {% if data.fuel == 'DIESEL' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}ديزل{% else %}Diesel{% endif %}</option>
+        <option value="HYBRID" {% if data.fuel == 'HYBRID' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}هايبرد{% else %}Hybrid{% endif %}</option>
+        <option value="ELECTRIC" {% if data.fuel == 'ELECTRIC' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}كهربائي{% else %}Electric{% endif %}</option>
+      </select>
+    </div>
+
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ناقل الحركة{% else %}Transmission{% endif %}</label>
+      <select class="ds-input" name="transmission">
+        <option value="AUTOMATIC" {% if data.transmission == 'AUTOMATIC' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}تلقائي{% else %}Automatic{% endif %}</option>
+        <option value="MANUAL" {% if data.transmission == 'MANUAL' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}يدوي{% else %}Manual{% endif %}</option>
+      </select>
+    </div>
+
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}اللون{% else %}Color{% endif %}</label>
+      <input class="ds-input" name="color" value="{{ data.color|default:'' }}">
+    </div>
+
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}المقاعد{% else %}Seats{% endif %}</label>
+      <input class="ds-input" name="seats" value="{{ data.seats|default:'5' }}">
+    </div>
+
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}عداد المسافات (كم){% else %}Odometer (Km){% endif %}</label>
+      <input class="ds-input" name="odometer_km" value="{{ data.odometer_km|default:'0' }}">
+    </div>
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn" href="/vehicles/new/details/">{% if request.session.ui_lang == 'ar' %}عودة{% else %}Back{% endif %}</a>
+    <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

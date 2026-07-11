@@ -1,0 +1,70 @@
+{% extends "base/_app_shell.html" %}
+{% load permissions_tags %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}الصيانة{% else %}Maintenance{% endif %}{% endblock %}
+{% block page_subtitle %}{% if request.session.ui_lang == 'ar' %}إدارة مهام وجدوال الصيانة{% else %}Manage maintenance tasks and schedules{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page" id="ds-maintenance"
+  data-can-update="{% if request.user|has_perm:'maintenance.update' %}1{% else %}0{% endif %}"
+  data-can-delete="{% if request.user|has_perm:'maintenance.delete' %}1{% else %}0{% endif %}"
+  data-can-report="{% if request.user|has_perm:'reports.view' or request.user|has_perm:'reports.view_maintenance' %}1{% else %}0{% endif %}">
+
+  <div class="ds-filters">
+    <input class="ds-input" id="m-vehicle" placeholder="{% if request.session.ui_lang == 'ar' %}مركبة / ماركة / طراز{% else %}Vehicle / Brand / Model{% endif %}">
+    <input class="ds-input" id="m-plate" placeholder="{% if request.session.ui_lang == 'ar' %}اللوحة{% else %}Plate{% endif %}">
+    <select class="ds-input" id="m-type">
+      <option value="">{% if request.session.ui_lang == 'ar' %}النوع{% else %}Type{% endif %}</option>
+      <option value="Service">{% if request.session.ui_lang == 'ar' %}صيانة{% else %}Service{% endif %}</option>
+      <option value="Repair">{% if request.session.ui_lang == 'ar' %}إصلاح{% else %}Repair{% endif %}</option>
+      <option value="Inspection">{% if request.session.ui_lang == 'ar' %}تفتيش{% else %}Inspection{% endif %}</option>
+    </select>
+    <select class="ds-input" id="m-priority">
+      <option value="">{% if request.session.ui_lang == 'ar' %}الأولوية{% else %}Priority{% endif %}</option>
+      <option value="Low">{% if request.session.ui_lang == 'ar' %}منخفض{% else %}Low{% endif %}</option>
+      <option value="Medium">{% if request.session.ui_lang == 'ar' %}متوسط{% else %}Medium{% endif %}</option>
+      <option value="High">{% if request.session.ui_lang == 'ar' %}عالي{% else %}High{% endif %}</option>
+    </select>
+  </div>
+
+    <div class="ds-toolbar">
+      <div class="ds-toolbar__left">
+      {% if request.user|has_perm:'maintenance.create' %}
+        <a class="ds-btn ds-btn--primary" href="/maintenance/new/">{% if request.session.ui_lang == 'ar' %}مهمة جديدة{% else %}New Task{% endif %}</a>
+      {% endif %}
+      {% if request.user|has_perm:'maintenance.update' %}
+        <button class="ds-btn ds-btn--ghost" id="m-mark-done" disabled>{% if request.session.ui_lang == 'ar' %}وضع كمكتملة{% else %}Mark Done{% endif %}</button>
+      {% endif %}
+    </div>
+    <div class="ds-toolbar__right">
+      <a class="ds-btn ds-btn--export" href="/print/reports/maintenance/" target="_blank">{% if request.session.ui_lang == 'ar' %}تصدير تقرير الصيانة{% else %}Export Maintenance Report{% endif %}</a>
+    </div>
+  </div>
+
+  <div class="ds-card ds-tableWrap" id="m-tableCard">
+    <table class="ds-table">
+      <thead>
+        <tr>
+          <th>{% if request.session.ui_lang == 'ar' %}التاريخ{% else %}Date{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}اللوحة{% else %}Plate{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}النوع{% else %}Type{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الأولوية{% else %}Priority{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}المكلف{% else %}Assignee{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الموعد{% else %}Due{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}التكلفة المقدرة{% else %}Est Cost{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الإجراءات{% else %}Actions{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody id="m-body">
+        <tr><td colspan="10" class="ds-empty">{% if request.session.ui_lang == 'ar' %}جاري التحميل…{% else %}Loading…{% endif %}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/maintenance_live.js" defer></script>
+{% endblock %}

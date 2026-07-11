@@ -1,0 +1,82 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web.Dockerfile
+    env_file:
+      - .env
+    working_dir: /app
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn -c /app/infra/gunicorn/gunicorn.conf.py config.wsgi:application"
+    volumes:
+      - static_data:/vol/static
+      - media_data:/vol/media
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: infra/docker/worker.Dockerfile
+    env_file:
+      - .env
+    working_dir: /app
+    command: celery -A config worker -l info
+    depends_on:
+      - web
+      - redis
+      - db
+    restart: unless-stopped
+
+  beat:
+    build:
+      context: .
+      dockerfile: infra/docker/worker.Dockerfile
+    env_file:
+      - .env
+    working_dir: /app
+    command: celery -A config beat -l info
+    depends_on:
+      - web
+      - redis
+      - db
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_data:/vol/static
+      - media_data:/vol/media
+    depends_on:
+      - web
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-drivesphere}
+      POSTGRES_USER: ${POSTGRES_USER:-drivesphere}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-drivesphere}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  static_data:
+  media_data:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,36 @@
+{% extends "vehicles/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}المستندات والصور{% else %}Documents And Photos{% endif %}</h3>
+
+<form method="post" enctype="multipart/form-data" class="ds-form">
+  {% csrf_token %}
+  <div class="ds-formGrid">
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}مسح التسجيل{% else %}Registration Scan{% endif %}</label>
+      <input class="ds-input" type="file" name="registration_scan">
+    </div>
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}انتهاء التسجيل{% else %}Registration Expiry{% endif %}</label>
+      <input class="ds-input" type="date" name="registration_expiry">
+    </div>
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}مسح التأمين{% else %}Insurance Scan{% endif %}</label>
+      <input class="ds-input" type="file" name="insurance_scan">
+    </div>
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}انتهاء التأمين{% else %}Insurance Expiry{% endif %}</label>
+      <input class="ds-input" type="date" name="insurance_expiry">
+    </div>
+    <div class="ds-field" style="grid-column:1/-1;">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}صور المركبة{% else %}Vehicle Photos{% endif %}</label>
+      <input class="ds-input" type="file" name="photos" multiple>
+    </div>
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn" href="/vehicles/new/pricing/">{% if request.session.ui_lang == 'ar' %}عودة{% else %}Back{% endif %}</a>
+    <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}حفظ المركبة{% else %}Save Vehicle{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

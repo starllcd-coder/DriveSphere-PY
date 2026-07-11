@@ -1,0 +1,29 @@
+<div class="ds-modal" id="refund">
+  <div class="ds-modal__dialog">
+
+    <div class="ds-modal__head">
+      <div class="ds-modal__title">Refund</div>
+      <button class="ds-modal__close" data-close="refund">✕</button>
+    </div>
+
+    <div class="ds-modal__body">
+      <div class="ds-formGrid">
+        <input class="ds-input" id="rf-payment" placeholder="Payment ID">
+        <input class="ds-input" id="rf-amount" placeholder="Amount">
+        <select class="ds-input" id="rf-method">
+          <option>Method</option>
+          <option>CASH</option>
+          <option>CARD</option>
+          <option>BANK_TRANSFER</option>
+        </select>
+        <textarea class="ds-input" id="rf-notes" placeholder="Notes"></textarea>
+      </div>
+    </div>
+
+    <div class="ds-modal__foot">
+      <button class="ds-btn" data-close="refund">Cancel</button>
+      <button class="ds-btn ds-btn--primary" id="rf-save">Process Refund</button>
+    </div>
+
+  </div>
+</div>

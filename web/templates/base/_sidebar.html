@@ -1,0 +1,82 @@
+{% load static %}
+{% with ui_lang=ui_lang|default:request.session.ui_lang|default:request.user.preferred_language|default:"en" %}
+<aside class="ds-sidebar">
+  {% comment %}Show Arabic name and flip order explicitly for Arabic UI{% endcomment %}
+  {% with business_name_ar=ds_business.business_name_ar|default:ds_business.business_name|default:"DriveSphere" %}
+    {% if ui_lang == "ar" %}
+      <div class="ds-sidebar__brand">
+        <div class="ds-brand__text" dir="rtl">
+          <div class="ds-brand__name">{{ ds_business.business_name_ar|default:ds_business.business_name|default:"DriveSphere" }}</div>
+          <div class="ds-brand__tagline">رحلات سلسة، حضور عالمي</div>
+        </div>
+        {% if ds_business.logo %}
+          <img class="ds-brand__logo" src="{{ ds_business.logo.url }}" alt="{{ business_name_ar }}">
+        {% else %}
+          <img class="ds-brand__logo" src="{% static 'img/logo/logo.png' %}" alt="{{ business_name_ar }}">
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="ds-sidebar__brand">
+        {% if ds_business.logo %}
+          <img class="ds-brand__logo" src="{{ ds_business.logo.url }}" alt="{{ ds_business.business_name|default:'DriveSphere' }}">
+        {% else %}
+          <img class="ds-brand__logo" src="{% static 'img/logo/logo.png' %}" alt="DriveSphere">
+        {% endif %}
+        <div class="ds-brand__text">
+          <div class="ds-brand__name">{{ ds_business.business_name|default:"DriveSphere" }}</div>
+          <div class="ds-brand__tagline">Seamless Journeys, Global Reach</div>
+        </div>
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <nav class="ds-nav">
+    <a class="ds-nav__item {% if request.path == '/dashboard/' or request.path == '/' %}is-active{% endif %}" href="/dashboard/">
+      <span class="ds-nav__icon">🏠</span>
+      <span class="ds-nav__label">{% if ui_lang == "ar" %}لوحة التحكم{% else %}Dashboard{% endif %}</span>
+    </a>
+
+    <a class="ds-nav__item {% if request.path|slice:':10' == '/bookings/' %}is-active{% endif %}" href="/bookings/">
+      <span class="ds-nav__icon">📅</span>
+      <span class="ds-nav__label">{% if ui_lang == "ar" %}الحجوزات{% else %}Bookings{% endif %}</span>
+    </a>
+
+    <a class="ds-nav__item {% if request.path|slice:':11' == '/customers/' %}is-active{% endif %}" href="/customers/">
+      <span class="ds-nav__icon">👥</span>
+      <span class="ds-nav__label">{% if ui_lang == "ar" %}العملاء{% else %}Customers{% endif %}</span>
+    </a>
+
+    <a class="ds-nav__item {% if request.path|slice:':10' == '/vehicles/' %}is-active{% endif %}" href="/vehicles/">
+      <span class="ds-nav__icon">🚗</span>
+      <span class="ds-nav__label">{% if ui_lang == "ar" %}المركبات{% else %}Vehicles{% endif %}</span>
+    </a>
+
+    <a class="ds-nav__item {% if request.path|slice:':10' == '/payments/' %}is-active{% endif %}" href="/payments/">
+      <span class="ds-nav__icon">💳</span>
+      <span class="ds-nav__label">{% if ui_lang == "ar" %}المدفوعات{% else %}Payments{% endif %}</span>
+    </a>
+
+    <a class="ds-nav__item {% if request.path|slice:':13' == '/maintenance/' %}is-active{% endif %}" href="/maintenance/">
+      <span class="ds-nav__icon">🛠️</span>
+      <span class="ds-nav__label">{% if ui_lang == "ar" %}الصيانة{% else %}Maintenance{% endif %}</span>
+    </a>
+
+    <a class="ds-nav__item {% if request.path|slice:':9' == '/reports/' %}is-active{% endif %}" href="/reports/">
+      <span class="ds-nav__icon">📊</span>
+      <span class="ds-nav__label">{% if ui_lang == "ar" %}التقارير{% else %}Reports{% endif %}</span>
+    </a>
+
+    <a class="ds-nav__item {% if request.path|slice:':10' == '/settings/' %}is-active{% endif %}" href="/settings/general/">
+      <span class="ds-nav__icon">⚙️</span>
+      <span class="ds-nav__label">{% if ui_lang == "ar" %}الإعدادات{% else %}Settings{% endif %}</span>
+    </a>
+  </nav>
+
+  <div class="ds-sidebar__footer">
+    <a class="ds-nav__item ds-nav__item--logout" href="/logout/">
+      <span class="ds-nav__icon">⏻</span>
+      <span class="ds-nav__label">{% if ui_lang == "ar" %}تسجيل الخروج{% else %}Logout{% endif %}</span>
+    </a>
+  </div>
+</aside>
+{% endwith %}

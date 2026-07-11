@@ -1,0 +1,324 @@
+{% extends "base/_app_shell.html" %}
+{% load static %}
+{% block title %}Dashboard - DriveSphere{% endblock %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}لوحة القيادة{% else %}Dashboard{% endif %}{% endblock %}
+
+{% block content %}
+  <section class="ds-grid ds-grid--kpis">
+    <div class="ds-kpi ds-kpi--blue">
+      <div class="ds-kpi__icon">📅</div>
+      <div class="ds-kpi__meta">
+        {% if request.session.ui_lang == 'ar' %}
+          <div class="ds-kpi__label">إجمالي الحجوزات</div>
+          <div class="ds-kpi__value">{{ kpis.total_bookings }}</div>
+        {% else %}
+          <div class="ds-kpi__label">Total Bookings</div>
+          <div class="ds-kpi__value">{{ kpis.total_bookings }}</div>
+        {% endif %}
+      </div>
+      <div class="ds-kpi__trend is-up">▲ {{ kpis.trend_total_bookings }}%</div>
+    </div>
+
+    <div class="ds-kpi">
+      <div class="ds-kpi__icon">👤</div>
+      <div class="ds-kpi__meta">
+        {% if request.session.ui_lang == 'ar' %}
+          <div class="ds-kpi__label">العملاء النشطون</div>
+          <div class="ds-kpi__value">{{ kpis.active_customers }}</div>
+        {% else %}
+          <div class="ds-kpi__label">Active Customers</div>
+          <div class="ds-kpi__value">{{ kpis.active_customers }}</div>
+        {% endif %}
+      </div>
+      <div class="ds-kpi__trend is-up">▲ {{ kpis.trend_active_customers }}%</div>
+    </div>
+
+    <div class="ds-kpi">
+      <div class="ds-kpi__icon">🚗</div>
+      <div class="ds-kpi__meta">
+        {% if request.session.ui_lang == 'ar' %}
+          <div class="ds-kpi__label">أسطول المركبات</div>
+          <div class="ds-kpi__value">{{ kpis.fleet_vehicles }}</div>
+        {% else %}
+          <div class="ds-kpi__label">Fleet Vehicles</div>
+          <div class="ds-kpi__value">{{ kpis.fleet_vehicles }}</div>
+        {% endif %}
+      </div>
+      <div class="ds-kpi__trend {% if kpis.trend_fleet_vehicles >= 0 %}is-up{% else %}is-down{% endif %}">{% if kpis.trend_fleet_vehicles >= 0 %}▲{% else %}▼{% endif %} {{ kpis.trend_fleet_vehicles }}%</div>
+    </div>
+
+    <div class="ds-kpi ds-kpi--gold">
+      <div class="ds-kpi__icon">
+        <img class="ds-kpi__iconImg" src="{% static 'img/logo/light.png' %}" alt="DriveSphere" />
+      </div>
+      <div class="ds-kpi__meta">
+        {% if request.session.ui_lang == 'ar' %}
+          <div class="ds-kpi__label">الإيرادات</div>
+          <div class="ds-kpi__value">
+            {{ ds_business.currency_symbol|default:ds_business.currency_code }} {{ kpis.earnings|floatformat:3 }}
+          </div>
+        {% else %}
+          <div class="ds-kpi__label">Earnings</div>
+          <div class="ds-kpi__value">
+            {{ ds_business.currency_code|default:"OMR" }} {{ kpis.earnings|floatformat:3 }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="ds-kpi__trend is-up">▲ {{ kpis.trend_earnings }}%</div>
+    </div>
+  </section>
+
+  <section class="ds-grid ds-grid--ops">
+    <div class="ds-card">
+      <div class="ds-card__head">
+        <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}نبض التشغيل{% else %}Operations Pulse{% endif %}</div>
+      </div>
+      <div class="ds-statList">
+        <div class="ds-statRow"><span>{% if request.session.ui_lang == 'ar' %}الإيجارات النشطة{% else %}Active rentals{% endif %}</span><strong>{{ kpis.active_rentals }}</strong></div>
+        <div class="ds-statRow"><span>{% if request.session.ui_lang == 'ar' %}استلامات اليوم{% else %}Today's pickups{% endif %}</span><strong>{{ kpis.today_pickups }}</strong></div>
+        <div class="ds-statRow"><span>{% if request.session.ui_lang == 'ar' %}مرتجعات اليوم{% else %}Today's returns{% endif %}</span><strong>{{ kpis.today_returns }}</strong></div>
+        <div class="ds-statRow"><span>{% if request.session.ui_lang == 'ar' %}المتأخرات{% else %}Overdue rentals{% endif %}</span><strong>{{ kpis.overdue_rentals }}</strong></div>
+      </div>
+    </div>
+
+    <div class="ds-card">
+      <div class="ds-card__head">
+        <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}تنبيهات قريبة{% else %}Upcoming Alerts{% endif %}</div>
+      </div>
+      <div class="ds-statList">
+        <div class="ds-statRow"><span>{% if request.session.ui_lang == 'ar' %}خدمات مستحقة{% else %}Services due{% endif %}</span><strong>{{ kpis.upcoming_services }}</strong></div>
+        <div class="ds-statRow"><span>{% if request.session.ui_lang == 'ar' %}وثائق توشك على الانتهاء{% else %}Docs expiring in 30d{% endif %}</span><strong>{{ kpis.expiring_documents }}</strong></div>
+        <div class="ds-statRow"><span>{% if request.session.ui_lang == 'ar' %}مهام صيانة مفتوحة{% else %}Open maintenance{% endif %}</span><strong>{{ kpis.maintenance_open }}</strong></div>
+        <div class="ds-statRow"><span>{% if request.session.ui_lang == 'ar' %}استغلال الأسطول{% else %}Fleet utilization{% endif %}</span><strong>{{ kpis.fleet_utilization }}%</strong></div>
+      </div>
+    </div>
+
+    <div class="ds-card">
+      <div class="ds-card__head">
+        <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}إجراءات سريعة{% else %}Quick Actions{% endif %}</div>
+      </div>
+      <div class="ds-actionGrid">
+        <a class="ds-actionBtn" href="/vehicles/new/details/">{% if request.session.ui_lang == 'ar' %}إضافة مركبة{% else %}Add Vehicle{% endif %}</a>
+        <a class="ds-actionBtn" href="/bookings/">{% if request.session.ui_lang == 'ar' %}إنشاء فاتورة{% else %}Create Invoice{% endif %}</a>
+        <a class="ds-actionBtn" href="/maintenance/new/">{% if request.session.ui_lang == 'ar' %}جدولة صيانة{% else %}Schedule Service{% endif %}</a>
+        <a class="ds-actionBtn" href="/customers/">{% if request.session.ui_lang == 'ar' %}رفع مستند{% else %}Upload Document{% endif %}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="ds-grid ds-grid--main">
+    <div class="ds-card ds-card--chart">
+      <div class="ds-card__head">
+        <div class="ds-card__title">
+          {% if request.session.ui_lang == 'ar' %}نظرة عامة على الإيرادات{% else %}Earnings Overview{% endif %}
+        </div>
+        <div class="ds-card__legend">
+          <span class="ds-dotLegend ds-dotLegend--blue"></span> {% if request.session.ui_lang == 'ar' %}هذا العام{% else %}{{ earnings_chart.label_primary }}{% endif %}
+          <span class="ds-dotLegend ds-dotLegend--gold"></span> {% if request.session.ui_lang == 'ar' %}العام الماضي{% else %}{{ earnings_chart.label_secondary }}{% endif %}
+        </div>
+        <div class="ds-card__actions ds-card__actions--chart">
+          <button class="ds-chartPeriodBtn {% if chart_period == 'year' %}is-active{% endif %}" type="button" data-chart-period="year">{% if request.session.ui_lang == 'ar' %}سنة{% else %}Year{% endif %}</button>
+          <button class="ds-chartPeriodBtn {% if chart_period == 'month' %}is-active{% endif %}" type="button" data-chart-period="month">{% if request.session.ui_lang == 'ar' %}شهر{% else %}Month{% endif %}</button>
+          <button class="ds-chartPeriodBtn {% if chart_period == 'week' %}is-active{% endif %}" type="button" data-chart-period="week">{% if request.session.ui_lang == 'ar' %}أسبوع{% else %}Week{% endif %}</button>
+        </div>
+      </div>
+
+      <div class="ds-chartWrap">
+        <svg class="ds-chart" viewBox="0 0 520 160" role="img" aria-label="Earnings chart">
+          <line class="ds-chartGrid" x1="20" y1="20" x2="500" y2="20" />
+          <line class="ds-chartGrid" x1="20" y1="80" x2="500" y2="80" />
+          <line class="ds-chartGrid" x1="20" y1="140" x2="500" y2="140" />
+          <polyline class="ds-chartLine ds-chartLine--blue" points="{{ earnings_chart.primary_points }}" />
+          <polyline class="ds-chartLine ds-chartLine--gold" points="{{ earnings_chart.secondary_points }}" />
+          {% for p in earnings_chart.primary_dots %}
+            <circle class="ds-chartDot ds-chartDot--blue" cx="{{ p.x }}" cy="{{ p.y }}" r="3">
+              <title>{{ p.label }}: {{ ds_business.currency_symbol|default:ds_business.currency_code }} {{ p.value }}</title>
+            </circle>
+          {% endfor %}
+          {% for p in earnings_chart.secondary_dots %}
+            <circle class="ds-chartDot ds-chartDot--gold" cx="{{ p.x }}" cy="{{ p.y }}" r="3">
+              <title>{{ p.label }}: {{ ds_business.currency_symbol|default:ds_business.currency_code }} {{ p.value }}</title>
+            </circle>
+          {% endfor %}
+        </svg>
+        <div class="ds-chartMonths">
+          {% for label in earnings_chart.labels %}
+            <span>{{ label }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-card">
+      <div class="ds-card__head">
+        <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}الحجوزات{% else %}Reservations{% endif %}</div>
+        <button class="ds-ghost" type="button">⋯</button>
+      </div>
+
+      <div class="ds-list">
+        {% for r in recent_reservations %}
+          <a class="ds-listItem" href="/bookings/{{ r.booking_id }}/" aria-label="View booking">
+            <div class="ds-listItem__meta">
+              <div class="ds-listItem__name">{{ r.customer|default:"-" }}</div>
+              <div class="ds-listItem__sub">{{ r.pickup }}{% if r.pickup_time %} at {{ r.pickup_time }}{% endif %}</div>
+              <div class="ds-listItem__sub">{{ r.vehicle|default:"-" }}</div>
+            </div>
+          </a>
+        {% empty %}
+          <div class="ds-empty">{% if request.session.ui_lang == 'ar' %}لا يوجد حجوزات{% else %}No reservations{% endif %}</div>
+        {% endfor %}
+
+        <a class="ds-viewAll" href="/bookings/">{% if request.session.ui_lang == 'ar' %}عرض الكل{% else %}View All{% endif %}</a>
+      </div>
+    </div>
+
+    <div class="ds-card ds-card--wide">
+      <div class="ds-card__head">
+        <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}الحجوزات الأخيرة{% else %}Recent Bookings{% endif %}</div>
+        <a class="ds-viewAllInline" href="/bookings/">{% if request.session.ui_lang == 'ar' %}عرض الكل ›{% else %}View All ›{% endif %}</a>
+      </div>
+
+      <div class="ds-table">
+        <div class="ds-table__row ds-table__row--head">
+          <div>{% if request.session.ui_lang == 'ar' %}الرقم{% else %}ID{% endif %}</div>
+          <div>{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</div>
+          <div>{% if request.session.ui_lang == 'ar' %}التاريخ{% else %}Date{% endif %}</div>
+          <div class="ds-right">{% if request.session.ui_lang == 'ar' %}المبلغ{% else %}Amount{% endif %}</div>
+        </div>
+        {% for b in recent_bookings %}
+          <a class="ds-table__row" href="/bookings/{{ b.booking_id }}/" aria-label="View booking">
+            <div>{{ b.ref }}</div>
+            <div>{{ b.customer|default:"-" }}</div>
+            <div>{{ b.date }}</div>
+            <div class="ds-right">{{ ds_business.currency_symbol|default:ds_business.currency_code }} {{ b.amount }}</div>
+          </a>
+        {% empty %}
+          <div class="ds-table__row">
+            <div class="ds-muted">{% if request.session.ui_lang == 'ar' %}لا توجد حجوزات{% else %}No bookings{% endif %}</div><div></div><div></div><div></div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="ds-card">
+      <div class="ds-card__head">
+        <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}المدفوعات الحديثة{% else %}Recent Payments{% endif %}</div>
+        <button class="ds-ghost" type="button">⋯</button>
+      </div>
+
+      <div class="ds-miniList">
+        {% for p in recent_payments %}
+          <a class="ds-miniItem" href="/payments/{{ p.payment_id }}/edit/" aria-label="View payment">
+            <div class="ds-miniItem__meta">
+              <div class="ds-miniItem__name">{{ p.customer|default:"-" }}</div>
+              <div class="ds-miniItem__sub">{{ p.date }}</div>
+            </div>
+            <div class="ds-miniItem__right">
+              <div class="ds-miniItem__price">{{ p.currency }} {{ p.amount }}</div>
+              <div class="ds-pillPaid">
+                {% if request.session.ui_lang == 'ar' %}
+                  {% if p.status|default:"Paid"|lower == 'paid' %}مدفوع{% else %}{{ p.status }}{% endif %}
+                {% else %}
+                  {{ p.status|default:"Paid" }}
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        {% empty %}
+          <div class="ds-empty">{% if request.session.ui_lang == 'ar' %}لا توجد مدفوعات{% else %}No payments{% endif %}</div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+  .ds-chartWrap { margin-top: 10px; }
+  .ds-card__actions--chart {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(246,249,255,0.94));
+    border: 1px solid rgba(20,35,60,0.12);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+  }
+  .ds-chartPeriodBtn {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    border-radius: 9px;
+    background: transparent;
+    color: #4f5c74;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.2px;
+    min-width: 58px;
+    padding: 8px 11px;
+    transition: all .16s ease;
+  }
+  .ds-chartPeriodBtn:hover {
+    color: #213f6a;
+    background: rgba(37,99,235,0.08);
+  }
+  .ds-chartPeriodBtn.is-active {
+    color: #ffffff;
+    background: linear-gradient(135deg, #1f4e8c, #2a67bc 55%, #d1a646 125%);
+    box-shadow: 0 6px 14px rgba(31,78,140,0.28);
+  }
+  .ds-chartPeriodBtn:focus-visible {
+    outline: 2px solid rgba(42,103,188,0.35);
+    outline-offset: 1px;
+  }
+  .ds-chart { width: 100%; height: 160px; }
+  .ds-chartGrid { stroke: rgba(20,35,60,0.1); stroke-width: 1; }
+  .ds-chartLine { fill: none; stroke-width: 2.5; }
+  .ds-chartLine--blue { stroke: #2563eb; }
+  .ds-chartLine--gold { stroke: #d97706; }
+  .ds-chartDot { opacity: 0.85; }
+  .ds-chartDot--blue { fill: #2563eb; }
+  .ds-chartDot--gold { fill: #d97706; }
+  .ds-chartMonths {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .ds-listItem, .ds-miniItem, .ds-table__row { text-decoration: none; color: inherit; }
+  .ds-listItem:hover, .ds-miniItem:hover, .ds-table__row:hover { box-shadow: 0 8px 20px rgba(20,35,60,0.08); }
+  .ds-kpi__iconImg { width: 28px; height: 28px; object-fit: contain; }
+  .ds-grid--ops { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 18px 0 8px; }
+  .ds-statList { display: grid; gap: 10px; }
+  .ds-statRow { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(20,35,60,0.08); }
+  .ds-statRow:last-child { border-bottom: 0; padding-bottom: 0; }
+  .ds-statRow span { color: var(--muted); }
+  .ds-statRow strong { font-size: 18px; color: #16305f; }
+  .ds-actionGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .ds-actionBtn { display: flex; align-items: center; justify-content: center; min-height: 92px; border-radius: 18px; background: linear-gradient(135deg, rgba(37,99,235,0.10), rgba(217,119,6,0.08)); color: #16305f; text-decoration: none; font-weight: 700; text-align: center; padding: 16px; }
+  .ds-actionBtn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(20,35,60,0.08); }
+  @media (max-width: 1024px) {
+    .ds-grid--ops { grid-template-columns: 1fr; }
+    .ds-card__actions--chart { width: 100%; justify-content: center; }
+    .ds-chartPeriodBtn { flex: 1; min-width: 0; }
+  }
+</style>
+<script>
+  (function () {
+    const buttons = document.querySelectorAll("[data-chart-period]");
+    if (!buttons.length) return;
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const period = btn.getAttribute("data-chart-period") || "year";
+        const url = new URL(window.location.href);
+        url.searchParams.set("chart_period", period);
+        window.location.href = url.toString();
+      });
+    });
+  })();
+</script>
+{% endblock %}

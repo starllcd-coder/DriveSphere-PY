@@ -1,0 +1,190 @@
+{% load static %}
+{% with ui_lang=request.session.ui_lang|default:"en" %}
+<!doctype html>
+<html lang="{{ ui_lang }}" dir="{% if ui_lang == 'ar' %}rtl{% else %}ltr{% endif %}">
+<head>
+  <meta charset="utf-8" />
+  <title>{% if ui_lang == 'ar' %}تسجيل الدخول - درايف سفير{% else %}Login - DriveSphere{% endif %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+  <script defer src="{% static 'js/app.js' %}"></script>
+</head>
+
+<body class="ds-auth{% if ui_lang == 'ar' %} is-rtl{% endif %}">
+  <div class="ds-auth__bg">
+    <div class="ds-auth__panel">
+      <div class="ds-auth__glass">
+        <div class="ds-auth__left">
+          <div class="ds-auth__logoWrap">
+            <img class="ds-auth__logo" src="{% static 'img/logo/logo.png' %}" alt="DriveSphere">
+          </div>
+          <div class="ds-auth__brand">DriveSphere</div>
+          <div class="ds-auth__tagline">{% if ui_lang == 'ar' %}رحلات سلسة، حضور عالمي{% else %}Seamless Journeys, Global Reach{% endif %}</div>
+        </div>
+
+        <div class="ds-auth__right">
+          <div class="ds-auth__lang">
+            <div class="ds-lang-toggle" title="{% if ui_lang == 'ar' %}اللغة{% else %}Language{% endif %}">
+              <button class="ds-lang-toggle__btn {% if ui_lang == 'en' %}is-active{% endif %}" type="button" data-lang="en">EN</button>
+              <button class="ds-lang-toggle__btn {% if ui_lang == 'ar' %}is-active{% endif %}" type="button" data-lang="ar">AR</button>
+            </div>
+          </div>
+
+          <div class="ds-authCard">
+            <div class="ds-authCard__title">{% if ui_lang == 'ar' %}مرحبًا بعودتك!{% else %}Welcome Back!{% endif %}</div>
+
+            <form method="post" class="ds-form">
+              {% csrf_token %}
+
+              {% if form.non_field_errors %}
+                <div class="ds-alert ds-alert--danger">
+                  {{ form.non_field_errors }}
+                </div>
+              {% endif %}
+
+              <div class="ds-field">
+                <label class="ds-label">{% if ui_lang == 'ar' %}البريد الإلكتروني أو اسم المستخدم{% else %}Email or Username{% endif %}</label>
+                <div class="ds-inputWrap">
+                  <span class="ds-inputIcon">👤</span>
+                  {{ form.identifier }}
+                </div>
+              </div>
+
+              <div class="ds-field">
+                <label class="ds-label">{% if ui_lang == 'ar' %}كلمة المرور{% else %}Password{% endif %}</label>
+                <div class="ds-inputWrap">
+                  <span class="ds-inputIcon">🔒</span>
+                  {{ form.password }}
+                  <button type="button" class="ds-eye" data-toggle="password" aria-label="{% if ui_lang == 'ar' %}إظهار كلمة المرور{% else %}Toggle Password{% endif %}">👁</button>
+                </div>
+              </div>
+
+              <div class="ds-field">
+                <label class="ds-label">{% if ui_lang == 'ar' %}الفرع{% else %}Branch{% endif %}</label>
+                <div class="ds-inputWrap">
+                  <span class="ds-inputIcon">🏢</span>
+                  {{ form.branch }}
+                </div>
+              </div>
+
+              <div class="ds-row ds-row--between">
+                <label class="ds-check">
+                  {{ form.remember_me }}
+                  <span>{% if ui_lang == 'ar' %}تذكرني{% else %}Remember Me{% endif %}</span>
+                </label>
+
+                <a class="ds-link" href="#" aria-disabled="true">{% if ui_lang == 'ar' %}نسيت كلمة المرور؟{% else %}Forgot Password?{% endif %}</a>
+              </div>
+
+              <button class="ds-btn ds-btn--primary" type="submit">
+                {% if ui_lang == 'ar' %}تسجيل الدخول{% else %}Sign In{% endif %}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* ensure Django form widgets use our base styles */
+    input[type="text"], input[type="email"], input[type="password"], select {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font: inherit;
+      color: var(--ink);
+      padding: 14px 12px 14px 40px;
+    }
+    select { padding-left: 40px; }
+    /* input icon placement */
+    .ds-inputWrap { position: relative; }
+    .ds-inputIcon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .ds-eye { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); border:none; background:transparent; cursor:pointer; }
+    .ds-inputWrap { position: relative; }
+    .ds-inputIcon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .ds-eye { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; }
+
+    /* RTL adjustments: move icons and toggle to the other side */
+    .is-rtl input[type="text"], .is-rtl input[type="email"], .is-rtl input[type="password"], .is-rtl select {
+      padding: 14px 40px 14px 12px;
+    }
+    .is-rtl select { padding-right: 40px; padding-left: 12px; }
+    .is-rtl .ds-inputIcon { left: auto; right: 12px; }
+    .is-rtl .ds-eye { right: auto; left: 12px; }
+    input[type="checkbox"] { width:auto; }
+    /* Login background */
+    .ds-auth__bg {
+      background-image: url("{% static 'img/backgrounds/waves_light.png' %}");
+      background-size: cover;
+      background-position: center right;
+      background-repeat: no-repeat;
+      background-color: var(--bg, #f8fafc);
+    }
+    /* Apply same subtle background texture to the auth card for cohesion */
+    .ds-authCard {
+      background-image: url("{% static 'img/backgrounds/waves_light.png' %}");
+      background-size: cover;
+      background-position: center right;
+      background-repeat: no-repeat;
+      background-color: rgba(255,255,255,0.92);
+      box-shadow: 0 10px 30px rgba(10,25,47,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    /* Provide a translucent inner panel so form fields remain readable */
+    .ds-authCard .ds-form {
+      background: rgba(255,255,255,0.85);
+      padding: 18px;
+      border-radius: 10px;
+    }
+    /* Apply same background to left panel (logo + text) */
+    .ds-auth__left {
+      background-image: url("{% static 'img/backgrounds/waves_light.png' %}");
+      background-size: cover;
+      background-position: left center;
+      background-repeat: no-repeat;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      padding:48px 40px;
+      border-top-left-radius:14px;
+      border-bottom-left-radius:14px;
+    }
+    .ds-auth__logoWrap {
+      background: rgba(255,255,255,0.0);
+      padding: 12px 0 18px 0;
+    }
+    .ds-auth__brand, .ds-auth__tagline {
+      background: transparent;
+      text-align:center;
+    }
+    /* RTL adjustments: move icons and eye to the opposite side and swap input padding */
+    .ds-auth.is-rtl input[type="text"], .ds-auth.is-rtl input[type="email"], .ds-auth.is-rtl input[type="password"], .ds-auth.is-rtl select {
+      padding: 14px 40px 14px 12px;
+    }
+    .ds-auth.is-rtl .ds-inputIcon { left: auto; right: 12px; }
+    .ds-auth.is-rtl .ds-eye { right: auto; left: 12px; }
+  </style>
+  <script>
+    (function () {
+      try {
+        var isAr = (document.documentElement.getAttribute('lang') || '').toLowerCase() === 'ar' || document.documentElement.dir === 'rtl';
+        if (!isAr) return;
+        document.addEventListener('DOMContentLoaded', function () {
+          var sel = document.querySelector('select[name="branch"]');
+          if (!sel) return;
+          var opt = sel.querySelector('option[value=""]');
+          if (opt) opt.textContent = 'اختر الفرع';
+        });
+      } catch (e) {
+        // silent
+      }
+    })();
+  </script>
+</body>
+</html>
+{% endwith %}

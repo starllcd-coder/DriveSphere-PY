@@ -1,0 +1,41 @@
+{% extends "bookings/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}المركبات المتاحة{% else %}Available Vehicles{% endif %}</h3>
+
+<form method="post" class="ds-form">
+  {% csrf_token %}
+
+  <div class="ds-card ds-tableWrap">
+    <table class="ds-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}اللوحة{% else %}Plate{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}السعر اليومي{% else %}Daily Rate{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}الوديعة{% else %}Deposit{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vehicles %}
+          <tr>
+            <td><input type="radio" name="vehicle_id" value="{{ v.id }}" {% if data.vehicle_id|default:'' == v.id|stringformat:'s' %}checked{% endif %}></td>
+            <td>{{ v.brand.name }} {{ v.model.name }} {{ v.year }}</td>
+            <td>{{ v.plate_number }}</td>
+            <td>{{ v.daily_rate }}</td>
+            <td>{{ v.deposit }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="ds-empty">{% if request.session.ui_lang == 'ar' %}لا توجد مركبات متاحة للتواريخ المحددة.{% else %}No Vehicles Available For Selected Dates.{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn ds-btn--ghost" href="{{ wizard_base }}/dates/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

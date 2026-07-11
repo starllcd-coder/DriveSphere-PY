@@ -1,0 +1,60 @@
+{% extends "base/_app_shell.html" %}
+{% load permissions_tags %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}العملاء{% else %}Customers{% endif %}{% endblock %}
+{% block page_subtitle %}{% if request.session.ui_lang == 'ar' %}إدارة العملاء ومستنداتهم{% else %}Manage Customers And Their Documents{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page" id="ds-customers">
+
+  <div class="ds-toolbar__right">
+    {% if request.user|has_perm:'customers.manage' %}
+      <a class="ds-btn ds-btn--dark" href="/customers/new/">{% if request.session.ui_lang == 'ar' %}إضافة عميل{% else %}Add Customer{% endif %}</a>
+    {% endif %}
+  </div>
+
+  <form method="get" class="ds-form">
+    <div class="ds-filters">
+      <input class="ds-input" type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="{% if request.session.ui_lang == 'ar' %}اسم العميل / الهاتف / الهوية{% else %}Customer Name / Phone / ID{% endif %}">
+      <div></div><div></div><div></div>
+      <button class="ds-btn ds-btn--dark ds-filterBtn" type="submit">{% if request.session.ui_lang == 'ar' %}تصفية{% else %}Filter{% endif %}</button>
+    </div>
+  </form>
+
+  <div class="ds-tableWrap" style="margin-top: 12px;">
+    <table class="ds-table">
+      <thead>
+        <tr>
+          <th>{% if request.session.ui_lang == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}رقم الهاتف{% else %}Phone Number{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}رقم الهوية{% else %}ID Number{% endif %}</th>
+          <th>{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Address{% endif %}</th>
+          <th style="width: 220px;">{% if request.session.ui_lang == 'ar' %}الإجراءات{% else %}Actions{% endif %}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for c in customers %}
+          <tr>
+            <td>{{ c.name }}</td>
+            <td>{{ c.phone_number|default:"-" }}</td>
+            <td>{{ c.id_number|default:"-" }}</td>
+            <td>{{ c.address|default:"-" }}</td>
+            <td>
+              <a class="ds-link" href="/customers/{{ c.id }}/documents/">{% if request.session.ui_lang == 'ar' %}عرض / رفع الهوية / الرخصة{% else %}View / Upload ID / License{% endif %}</a>
+              {% if request.user|has_perm:'customers.manage' %}
+                <span class="ds-dot">•</span>
+                <a class="ds-link" href="/customers/{{ c.id }}/edit/">{% if request.session.ui_lang == 'ar' %}تعديل{% else %}Edit{% endif %}</a>
+                <span class="ds-dot">•</span>
+                <a class="ds-link" href="/customers/{{ c.id }}/delete/">{% if request.session.ui_lang == 'ar' %}حذف{% else %}Delete{% endif %}</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="ds-empty">{% if request.session.ui_lang == 'ar' %}لا يوجد عملاء.{% else %}No Customers Found.{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

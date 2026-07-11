@@ -1,0 +1,444 @@
+* {
+	font-family: "@FONT_BODY@";
+	font-size: 14px;
+	color: @INK@;
+}
+
+QWidget#AuthRoot {
+	background: qlineargradient(
+		x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0 #f7f8fb, stop: 1 #eef1f6
+	);
+}
+
+QFrame#AuthPanel {
+	background-color: @PANEL@;
+	border: 1px solid @STROKE@;
+	border-radius: 36px;
+}
+
+QFrame#AuthGlass {
+	background-color: @GLASS@;
+	border: 1px solid @STROKE@;
+	border-radius: 32px;
+}
+
+QFrame#AuthLeft {
+	background-image: url("@WAVES_LIGHT@");
+	background-position: left center;
+	background-repeat: no-repeat;
+	border-top-left-radius: 14px;
+	border-bottom-left-radius: 14px;
+}
+
+QLabel#AuthBrand {
+	font-family: "@FONT_DISPLAY@";
+	font-size: 52px;
+	font-weight: 900;
+}
+
+QLabel#AuthTagline {
+	font-size: 18px;
+	font-weight: 700;
+	color: @MUTED@;
+}
+
+QFrame#AuthCard {
+	background-image: url("@WAVES_LIGHT@");
+	background-position: center right;
+	background-repeat: no-repeat;
+	background-color: rgba(255,255,255,235);
+	border: 1px solid @STROKE@;
+	border-radius: 14px;
+}
+
+QFrame#AuthForm {
+	background-color: rgba(255,255,255,217);
+	border-radius: 10px;
+}
+
+QLabel#AuthCardTitle {
+	font-size: 34px;
+	font-weight: 900;
+}
+
+QLabel#AuthLabel {
+	font-weight: 700;
+}
+
+QFrame#InputWrap {
+	background-color: rgba(255,255,255,160);
+	border: 1px solid @STROKE@;
+	border-radius: 14px;
+}
+
+QLineEdit#AuthInput {
+	border: none;
+	background: transparent;
+	padding: 12px 10px;
+}
+
+QComboBox#AuthSelect {
+	border: none;
+	background: transparent;
+	padding: 10px 10px;
+}
+
+QComboBox#AuthSelect::drop-down {
+	border: none;
+}
+
+QPushButton#EyeButton {
+	border: none;
+	background: transparent;
+	padding: 0 6px;
+}
+
+QPushButton#PrimaryButton {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0 rgba(13,59,114,230), stop: 1 rgba(13,59,114,185)
+	);
+	color: #ffffff;
+	border: none;
+	border-radius: 14px;
+	padding: 12px 14px;
+	font-weight: 800;
+}
+
+QPushButton#PrimaryButton:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0 rgba(13,59,114,245), stop: 1 rgba(13,59,114,200)
+	);
+}
+
+QPushButton#DsBtnPrimary {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0 rgba(13,59,114,230), stop: 1 rgba(13,59,114,185)
+	);
+	color: #ffffff;
+	border: none;
+	border-radius: 10px;
+	padding: 8px 12px;
+	font-weight: 800;
+}
+
+QPushButton#DsBtnGhost {
+	background: rgba(255,255,255,210);
+	border: 1px solid rgba(20,35,60,35);
+	border-radius: 10px;
+	padding: 8px 12px;
+	font-weight: 700;
+}
+
+QPushButton#DsBtnDanger {
+	background: rgba(239,68,68,25);
+	border: 1px solid rgba(239,68,68,90);
+	color: #991b1b;
+	border-radius: 10px;
+	padding: 8px 12px;
+	font-weight: 800;
+}
+
+QPushButton#DsBtnExport {
+	background: rgba(16,185,129,20);
+	border: 1px solid rgba(16,185,129,95);
+	color: #065f46;
+	border-radius: 10px;
+	padding: 8px 12px;
+	font-weight: 800;
+}
+
+QPushButton#DsBtnPrimary:hover,
+QPushButton#DsBtnGhost:hover,
+QPushButton#DsBtnDanger:hover,
+QPushButton#DsBtnExport:hover {
+	margin-top: -1px;
+}
+
+QLabel#AuthLink {
+	color: @BLUE_2@;
+	font-weight: 700;
+}
+
+QFrame#LangToggle {
+	background: rgba(255,255,255,140);
+	border: 1px solid @STROKE@;
+	border-radius: 999px;
+}
+
+QPushButton#LangToggleButton {
+	border: none;
+	background: transparent;
+	padding: 8px 12px;
+	font-weight: 800;
+	color: @MUTED@;
+	border-radius: 999px;
+}
+
+QPushButton#LangToggleButton[active="true"] {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0 rgba(13,59,114,230), stop: 1 rgba(13,59,114,185)
+	);
+	color: #ffffff;
+}
+
+QFrame#LoginHero {
+	background-image: url("@WAVES_LIGHT@");
+	background-position: center;
+	background-repeat: no-repeat;
+	border-top-left-radius: 12px;
+	border-bottom-left-radius: 12px;
+}
+
+QFrame#LoginCard {
+	background-image: url("@WAVES_LIGHT@");
+	background-position: center right;
+	background-repeat: no-repeat;
+	background-color: rgba(255,255,255,238);
+	border: 1px solid @STROKE@;
+	border-radius: 16px;
+}
+
+QFrame#LoginForm {
+	background: transparent;
+}
+
+QFrame#LoginCard QLabel#AuthCardTitle {
+	font-size: 52px;
+	font-weight: 900;
+	color: #1f2e44;
+}
+
+QFrame#LoginCard QLabel#AuthLabel {
+	font-size: 13px;
+	font-weight: 800;
+	color: #5c6d85;
+}
+
+QFrame#LoginCard QFrame#InputWrap {
+	background-color: rgba(245,247,251,235);
+	border: 1px solid rgba(20,35,60,20);
+	border-radius: 13px;
+}
+
+QFrame#LoginCard QLineEdit#AuthInput,
+QFrame#LoginCard QComboBox#AuthSelect {
+	font-size: 15px;
+	color: #2b3b4f;
+}
+
+QPushButton#ForgotLinkButton {
+	border: none;
+	background: transparent;
+	color: #6f819a;
+	font-weight: 700;
+	padding: 4px 2px;
+}
+
+QPushButton#ForgotLinkButton:hover {
+	color: @BLUE_2@;
+}
+
+QPushButton#LoginSignInButton {
+	background: qlineargradient(
+		x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 rgba(13,59,114,238),
+		stop: 0.72 rgba(31,84,154,220),
+		stop: 1 rgba(224,195,120,232)
+	);
+	color: #ffffff;
+	border: 1px solid rgba(20,35,60,30);
+	border-radius: 16px;
+	padding: 12px 14px;
+	font-size: 24px;
+	font-weight: 900;
+}
+
+QPushButton#LoginSignInButton:hover {
+	background: qlineargradient(
+		x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 rgba(13,59,114,250),
+		stop: 0.72 rgba(31,84,154,232),
+		stop: 1 rgba(224,195,120,244)
+	);
+}
+
+QFrame#MainRoot {
+	background: @BG@;
+}
+
+QFrame#ListFiltersCard,
+QFrame#ListTableCard {
+	background: rgba(255,255,255,200);
+	border: 1px solid @STROKE@;
+	border-radius: 14px;
+}
+
+QFrame#ListActionsBar {
+	background: rgba(255,255,255,200);
+	border: 1px solid @STROKE@;
+	border-radius: 14px;
+}
+
+QLineEdit#ListFilterInput,
+QComboBox#ListFilterSelect {
+	background: rgba(255,255,255,230);
+	border: 1px solid @STROKE@;
+	border-radius: 10px;
+	padding: 8px 10px;
+	min-height: 34px;
+}
+
+QLineEdit#ListFilterInput:focus,
+QComboBox#ListFilterSelect:focus {
+	border: 1px solid rgba(42,109,211,150);
+}
+
+QTableWidget#ListTable {
+	background: rgba(255,255,255,245);
+	border: 1px solid @STROKE@;
+	border-radius: 10px;
+	gridline-color: rgba(20,35,60,20);
+	selection-background-color: rgba(42,109,211,55);
+	alternate-background-color: rgba(247,249,252,225);
+}
+
+QTableWidget#ListTable::item {
+	padding: 8px;
+}
+
+QHeaderView::section {
+	background: rgba(13,59,114,15);
+	border: none;
+	border-bottom: 1px solid rgba(20,35,60,30);
+	padding: 8px;
+	font-weight: 800;
+}
+
+QLabel#ListStatusBadge {
+	border-radius: 999px;
+	padding: 4px 10px;
+	font-weight: 800;
+	background: rgba(107,123,142,35);
+	color: @INK@;
+}
+
+QLabel#ListStatusBadge[status="CONFIRMED"],
+QLabel#ListStatusBadge[status="UPCOMING"] {
+	background: rgba(59,130,246,36);
+	color: #1e3a8a;
+}
+
+QLabel#ListStatusBadge[status="CHECKED_OUT"],
+QLabel#ListStatusBadge[status="IN_SERVICE"] {
+	background: rgba(245,158,11,36);
+	color: #92400e;
+}
+
+QLabel#ListStatusBadge[status="RETURNED"],
+QLabel#ListStatusBadge[status="PAID"],
+QLabel#ListStatusBadge[status="CLOSED"],
+QLabel#ListStatusBadge[status="AVAILABLE"] {
+	background: rgba(34,197,94,34);
+	color: #166534;
+}
+
+QLabel#ListStatusBadge[status="CANCELLED"],
+QLabel#ListStatusBadge[status="VOID"],
+QLabel#ListStatusBadge[status="OUT_OF_SERVICE"] {
+	background: rgba(239,68,68,34);
+	color: #991b1b;
+}
+
+QTabWidget::pane {
+	background: rgba(255,255,255,220);
+	border: 1px solid @STROKE@;
+	border-radius: 12px;
+	top: -1px;
+}
+
+QTabBar::tab {
+	background: rgba(255,255,255,168);
+	border: 1px solid @STROKE@;
+	border-bottom: none;
+	padding: 8px 12px;
+	margin-right: 6px;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	font-weight: 700;
+	color: @MUTED@;
+}
+
+QTabBar::tab:selected {
+	background: rgba(13,59,114,225);
+	color: #ffffff;
+}
+
+QTableWidget {
+	background: rgba(255,255,255,245);
+	border: 1px solid @STROKE@;
+	border-radius: 10px;
+	gridline-color: rgba(20,35,60,20);
+	alternate-background-color: rgba(247,249,252,225);
+	selection-background-color: rgba(42,109,211,55);
+}
+
+QTableWidget::item {
+	padding: 8px;
+}
+
+QLineEdit#DsInput,
+QComboBox#DsInput,
+QTextEdit#DsInput {
+	background: rgba(255,255,255,230);
+	border: 1px solid @STROKE@;
+	border-radius: 10px;
+	padding: 8px 10px;
+}
+
+QLineEdit#DsInput:focus,
+QComboBox#DsInput:focus,
+QTextEdit#DsInput:focus {
+	border: 1px solid rgba(42,109,211,150);
+}
+
+QDialog#DsDialog {
+	background: rgba(255,255,255,245);
+	border: 1px solid @STROKE@;
+	border-radius: 14px;
+}
+
+QLabel#DsDialogTitle {
+	font-size: 18px;
+	font-weight: 800;
+	color: @INK@;
+}
+
+QLabel#DsDialogBody {
+	font-size: 13px;
+	color: @MUTED@;
+}
+
+QMessageBox {
+	background: rgba(255,255,255,245);
+	border: 1px solid @STROKE@;
+}
+
+QMessageBox QLabel {
+	color: @INK@;
+	font-size: 13px;
+}
+
+QMessageBox QPushButton {
+	background: rgba(255,255,255,210);
+	border: 1px solid rgba(20,35,60,35);
+	border-radius: 10px;
+	padding: 7px 12px;
+	font-weight: 700;
+	min-width: 90px;
+}
+
+QMessageBox QPushButton:hover {
+	background: rgba(42,109,211,30);
+	border: 1px solid rgba(42,109,211,90);
+}

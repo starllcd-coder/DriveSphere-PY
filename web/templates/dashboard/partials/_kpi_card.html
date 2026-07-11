@@ -1,0 +1,43 @@
+{% load static %}
+<div class="ds-kpiCard">
+  <div class="ds-kpiCard__icon">
+    {% if money %}
+      {% if request.session.ui_lang == 'ar' %}
+        <div class="ds-kpiCard__iconSmallValue">{{ value }}</div>
+      {% else %}
+        <img src="{% static 'img/currency/omr_symbol.png' %}" class="currency-symbol" alt="{{ currency|default:'ر.ع.' }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'" onload="this.nextElementSibling.style.display='none'">
+        <span style="display:none">{{ currency|default:'' }}</span>
+      {% endif %}
+    {% else %}
+      {{ icon }}
+    {% endif %}
+  </div>
+
+  <div class="ds-kpiCard__meta">
+    <div class="ds-kpiCard__title">{{ title }}</div>
+
+    <div class="ds-kpiCard__value">
+      {% if money %}
+        {% if request.session.ui_lang == 'ar' %}
+          {{ value }}
+        {% else %}
+          <img src="{% static 'img/currency/omr_symbol.png' %}" class="currency-symbol" alt="{{ currency|default:'ر.ع.' }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'" onload="this.nextElementSibling.style.display='none'">
+          <span style="display:none">{{ currency|default:'' }}</span>
+          {{ value }}
+        {% endif %}
+      {% else %}
+        {{ value }}
+      {% endif %}
+    </div>
+
+    <div class="ds-kpiCard__foot">
+      <span class="ds-kpiCard__hint">{{ hint }}</span>
+
+      {% if trend is not None %}
+        <span class="ds-kpiCard__trend {% if trend >= 0 %}is-up{% else %}is-down{% endif %}">
+          {% if trend >= 0 %}+{% endif %}{{ trend }}%
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,492 @@
+{% extends "base/_app_shell.html" %}
+{% load permissions_tags %}
+
+{% block heading %}{% if request.session.ui_lang == 'ar' %}الإعدادات{% else %}Settings{% endif %}{% endblock %}
+{% block page_subtitle %}{% if request.session.ui_lang == 'ar' %}إدارة ملف النشاط التجاري، المستخدمين، وخيارات النظام{% else %}Manage business profile, users, and system options{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page{% if request.session.ui_lang == 'ar' %} is-rtl{% endif %}" id="ds-settings" {% if request.session.ui_lang == 'ar' %}dir="rtl"{% endif %}
+  data-can-settings="{% if request.user|has_perm:'settings.manage' %}1{% else %}0{% endif %}"
+  data-can-employees="{% if request.user|has_perm:'employees.manage' %}1{% else %}0{% endif %}">
+
+  <style>
+    /* Exchange table column alignment for RTL */
+    .ds-exchangeTable th, .ds-exchangeTable td { text-align: left; }
+    .is-rtl .ds-exchangeTable th, .is-rtl .ds-exchangeTable td { text-align: right; }
+    /* move Rate column text to the other edge in RTL (swap alignment) */
+    .is-rtl .ds-exchangeTable th:nth-child(2), .is-rtl .ds-exchangeTable td:nth-child(2) { text-align: right; }
+  </style>
+
+    <div class="ds-tabs">
+    <button class="ds-tab is-active" data-tab="general">{% if request.session.ui_lang == 'ar' %}عام{% else %}General{% endif %}</button>
+    <button class="ds-tab" data-tab="employees">{% if request.session.ui_lang == 'ar' %}الموظفون{% else %}Employees{% endif %}</button>
+    <button class="ds-tab" data-tab="notifications">{% if request.session.ui_lang == 'ar' %}الإشعارات{% else %}Notifications{% endif %}</button>
+    {% if request.user|has_perm:'settings.manage' %}
+      <button class="ds-tab" data-tab="integrations">{% if request.session.ui_lang == 'ar' %}التكاملات{% else %}Integrations{% endif %}</button>
+    {% endif %}
+    <button class="ds-tab" data-tab="audit">{% if request.session.ui_lang == 'ar' %}سجل النشاط{% else %}Audit Log{% endif %}</button>
+    <button class="ds-tab" data-tab="backup">{% if request.session.ui_lang == 'ar' %}النسخ الاحتياطي والاستعادة{% else %}Backup & Restore{% endif %}</button>
+    <button class="ds-tab" data-tab="database">{% if request.session.ui_lang == 'ar' %}قاعدة البيانات{% else %}Database{% endif %}</button>
+    <button class="ds-tab" data-tab="about">{% if request.session.ui_lang == 'ar' %}حول{% else %}About{% endif %}</button>
+  </div>
+
+  <div class="ds-tabPanels">
+
+    <!-- General -->
+    <section class="ds-tabPanel is-active" data-panel="general">
+      <div class="ds-card ds-card--panel">
+        {% if not request.user|has_perm:'settings.manage' %}
+          <div class="ds-alert ds-alert--danger" style="margin-bottom:12px;">
+            {% if request.session.ui_lang == 'ar' %}لا تملك صلاحية تعديل الإعدادات.{% else %}You do not have permission to modify settings.{% endif %}
+          </div>
+        {% endif %}
+        <div class="ds-formGrid">
+          <label class="ds-label" for="s-business-name">{% if request.session.ui_lang == 'ar' %}اسم النشاط{% else %}Business Name{% endif %}</label>
+          <input class="ds-input" id="s-business-name" placeholder="{% if request.session.ui_lang == 'ar' %}اسم النشاط{% else %}Business Name{% endif %}">
+
+          <label class="ds-label" for="s-company-code">{% if request.session.ui_lang == 'ar' %}رمز الشركة المختصر{% else %}Company Short Code{% endif %}</label>
+          <input class="ds-input" id="s-company-code" placeholder="{% if request.session.ui_lang == 'ar' %}رمز الشركة{% else %}Company Code{% endif %}">
+
+          <label class="ds-label" for="s-business-name-ar">{% if request.session.ui_lang == 'ar' %}اسم النشاط (بالعربية){% else %}Business Name (Arabic){% endif %}</label>
+          <input class="ds-input" id="s-business-name-ar" placeholder="{% if request.session.ui_lang == 'ar' %}اسم النشاط (بالعربية){% else %}Business Name (Arabic){% endif %}">
+
+          <label class="ds-label" for="s-cr">{% if request.session.ui_lang == 'ar' %}رقم السجل التجاري{% else %}Commercial Registration Number{% endif %}</label>
+          <input class="ds-input" id="s-cr" placeholder="{% if request.session.ui_lang == 'ar' %}رقم السجل التجاري{% else %}Commercial Registration Number{% endif %}">
+
+          <label class="ds-label" for="s-vat">{% if request.session.ui_lang == 'ar' %}رقم ضريبة القيمة المضافة{% else %}VAT Number{% endif %}</label>
+          <input class="ds-input" id="s-vat" placeholder="{% if request.session.ui_lang == 'ar' %}رقم ضريبة القيمة المضافة{% else %}VAT Number{% endif %}">
+
+          <label class="ds-label" for="s-address">{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Address{% endif %}</label>
+          <input class="ds-input" id="s-address" placeholder="{% if request.session.ui_lang == 'ar' %}العنوان{% else %}Address{% endif %}">
+
+          <label class="ds-label" for="s-address-ar">{% if request.session.ui_lang == 'ar' %}العنوان (بالعربية){% else %}Address (Arabic){% endif %}</label>
+          <input class="ds-input" id="s-address-ar" placeholder="{% if request.session.ui_lang == 'ar' %}العنوان (بالعربية){% else %}Address (Arabic){% endif %}">
+
+          <label class="ds-label" for="s-phone">{% if request.session.ui_lang == 'ar' %}الهاتف{% else %}Phone{% endif %}</label>
+          <input class="ds-input" id="s-phone" placeholder="{% if request.session.ui_lang == 'ar' %}الهاتف{% else %}Phone{% endif %}">
+
+          <label class="ds-label" for="s-phone-ar">{% if request.session.ui_lang == 'ar' %}الهاتف (بالعربية){% else %}Phone (Arabic){% endif %}</label>
+          <input class="ds-input" id="s-phone-ar" placeholder="{% if request.session.ui_lang == 'ar' %}الهاتف (بالعربية){% else %}Phone (Arabic){% endif %}">
+
+          <label class="ds-label" for="s-email">{% if request.session.ui_lang == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}</label>
+          <input class="ds-input" id="s-email" placeholder="{% if request.session.ui_lang == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}">
+
+          <label class="ds-label" for="s-email-ar">{% if request.session.ui_lang == 'ar' %}البريد الإلكتروني (بالعربية){% else %}Email (Arabic){% endif %}</label>
+          <input class="ds-input" id="s-email-ar" placeholder="{% if request.session.ui_lang == 'ar' %}البريد الإلكتروني (بالعربية){% else %}Email (Arabic){% endif %}">
+
+          <label class="ds-label" for="s-website">{% if request.session.ui_lang == 'ar' %}الموقع الإلكتروني{% else %}Website{% endif %}</label>
+          <input class="ds-input" id="s-website" placeholder="{% if request.session.ui_lang == 'ar' %}الموقع الإلكتروني{% else %}Website{% endif %}">
+
+          <label class="ds-label" for="s-website-ar">{% if request.session.ui_lang == 'ar' %}الموقع الإلكتروني (بالعربية){% else %}Website (Arabic){% endif %}</label>
+          <input class="ds-input" id="s-website-ar" placeholder="{% if request.session.ui_lang == 'ar' %}الموقع الإلكتروني (بالعربية){% else %}Website (Arabic){% endif %}">
+
+          <label class="ds-label" for="s-currency-code">{% if request.session.ui_lang == 'ar' %}رمز العملة{% else %}Currency Code{% endif %}</label>
+          <select class="ds-input" id="s-currency-code">
+            <option value="OMR">{% if request.session.ui_lang == 'ar' %}OMR (الريال العماني){% else %}OMR (Omani Rial){% endif %}</option>
+            <option value="USD">{% if request.session.ui_lang == 'ar' %}USD (الدولار الأمريكي){% else %}USD (US Dollar){% endif %}</option>
+            <option value="EUR">{% if request.session.ui_lang == 'ar' %}EUR (اليورو){% else %}EUR (Euro){% endif %}</option>
+            <option value="AED">{% if request.session.ui_lang == 'ar' %}AED (درهم إماراتي){% else %}AED (UAE Dirham){% endif %}</option>
+            <option value="SAR">{% if request.session.ui_lang == 'ar' %}SAR (الريال السعودي){% else %}SAR (Saudi Riyal){% endif %}</option>
+            <option value="BHD">{% if request.session.ui_lang == 'ar' %}BHD (الدينار البحريني){% else %}BHD (Bahraini Dinar){% endif %}</option>
+            <option value="KWD">{% if request.session.ui_lang == 'ar' %}KWD (الدينار الكويتي){% else %}KWD (Kuwaiti Dinar){% endif %}</option>
+            <option value="QAR">{% if request.session.ui_lang == 'ar' %}QAR (الريال القطري){% else %}QAR (Qatari Riyal){% endif %}</option>
+          </select>
+
+          <label class="ds-label" for="s-currency-symbol">{% if request.session.ui_lang == 'ar' %}رمز العملة{% else %}Currency Symbol{% endif %}</label>
+          <input class="ds-input" id="s-currency-symbol" placeholder="{% if request.session.ui_lang == 'ar' %}رمز العملة{% else %}Currency Symbol{% endif %}">
+
+          <label class="ds-label" for="s-logo-input">{% if request.session.ui_lang == 'ar' %}الشعار{% else %}Logo{% endif %}</label>
+          <div class="ds-logoField">
+            <input class="ds-input" id="s-logo-input" type="file" accept="image/*">
+            <img id="s-logo-preview" class="ds-logoPreview" alt="Business Logo" hidden>
+            {% if request.user|has_perm:'settings.manage' %}
+              <button class="ds-btn" type="button" id="s-logo-upload">{% if request.session.ui_lang == 'ar' %}تحميل الشعار{% else %}Upload Logo{% endif %}</button>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if request.user|has_perm:'settings.manage' %}
+          <div class="ds-formActions">
+            <button class="ds-btn ds-btn--primary" id="s-save-business" data-primary-action="general">{% if request.session.ui_lang == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="ds-card ds-card--panel" style="margin-top:12px;">
+        <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}الفروع{% else %}Branches{% endif %}</div>
+        </div>
+        <div class="ds-toolbar">
+          <input class="ds-input" id="s-branch-name" placeholder="{% if request.session.ui_lang == 'ar' %}اسم الفرع الجديد{% else %}New Branch Name{% endif %}">
+          {% if request.user|has_perm:'settings.manage' %}
+            <button class="ds-btn" id="s-branch-add">{% if request.session.ui_lang == 'ar' %}إضافة فرع{% else %}Add Branch{% endif %}</button>
+          {% endif %}
+        </div>
+        <table class="ds-table" style="margin-top:10px;">
+          <thead><tr>
+            <th>{% if request.session.ui_lang == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+            <th>{% if request.session.ui_lang == 'ar' %}الرمز{% else %}Code{% endif %}</th>
+            <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="s-branches-body"><tr><td colspan="4" class="ds-empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="ds-card ds-card--panel" style="margin-top:12px;">
+        <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}ترقيم المستندات{% else %}Document Numbering{% endif %}</div>
+        </div>
+        <table class="ds-table" style="margin-top:10px;">
+          <thead>
+            <tr>
+              <th>{% if request.session.ui_lang == 'ar' %}نوع المستند{% else %}Document Type{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}رمز المستند{% else %}Doc Code{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}البادئة{% else %}Prefix{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}الفاصل{% else %}Separator{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}الملء{% else %}Padding{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}معاينة{% else %}Preview{% endif %}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="s-docs-body"><tr><td colspan="8" class="ds-empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="ds-card ds-card--panel" style="margin-top:12px;">
+        <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}أسعار الصرف{% else %}Exchange Rates{% endif %}</div>
+        </div>
+        <div class="ds-toolbar">
+          <div class="ds-muted" id="s-exchange-updated">{% if request.session.ui_lang == 'ar' %}آخر تحديث: —{% else %}Last Updated: —{% endif %}</div>
+          {% if request.user|has_perm:'settings.manage' %}
+            <button class="ds-btn" id="s-exchange-update">{% if request.session.ui_lang == 'ar' %}تحديث الأسعار{% else %}Update Rates{% endif %}</button>
+          {% endif %}
+        </div>
+        <table class="ds-exchangeTable" id="s-exchange-table">
+          <thead>
+            <tr>
+              <th>{% if request.session.ui_lang == 'ar' %}العملة{% else %}Currency{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}السعر{% else %}Rate{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="2" class="ds-empty">{% if request.session.ui_lang == 'ar' %}لا توجد أسعار{% else %}No Rates{% endif %}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Employees -->
+    <section class="ds-tabPanel" data-panel="employees">
+      <div class="ds-card ds-card--panel">
+        {% if not request.user|has_perm:'employees.manage' %}
+          <div class="ds-alert ds-alert--danger" style="margin-bottom:12px;">
+            {% if request.session.ui_lang == 'ar' %}لا تملك صلاحية إدارة الموظفين.{% else %}You do not have permission to manage employees.{% endif %}
+          </div>
+        {% endif %}
+        <div class="ds-formGrid">
+          <label class="ds-label" for="e-username">{% if request.session.ui_lang == 'ar' %}اسم المستخدم{% else %}Username{% endif %}</label>
+          <input class="ds-input" id="e-username" placeholder="{% if request.session.ui_lang == 'ar' %}اسم المستخدم{% else %}Username{% endif %}">
+
+          <label class="ds-label" for="e-email">{% if request.session.ui_lang == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}</label>
+          <input class="ds-input" id="e-email" placeholder="{% if request.session.ui_lang == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}">
+
+          <label class="ds-label" for="e-password">{% if request.session.ui_lang == 'ar' %}كلمة المرور{% else %}Password{% endif %}</label>
+          <input class="ds-input" id="e-password" placeholder="{% if request.session.ui_lang == 'ar' %}كلمة المرور{% else %}Password{% endif %}">
+
+          <label class="ds-label" for="e-role">{% if request.session.ui_lang == 'ar' %}الدور{% else %}Role{% endif %}</label>
+          <select class="ds-input" id="e-role">
+            <option value="ADMIN">{% if request.session.ui_lang == 'ar' %}مدير النظام{% else %}Admin{% endif %}</option>
+            <option value="MANAGER">{% if request.session.ui_lang == 'ar' %}مدير{% else %}Manager{% endif %}</option>
+            <option value="AGENT">{% if request.session.ui_lang == 'ar' %}وكيل{% else %}Agent{% endif %}</option>
+            <option value="MECHANIC">{% if request.session.ui_lang == 'ar' %}ميكانيكي{% else %}Mechanic{% endif %}</option>
+            <option value="ACCOUNTANT">{% if request.session.ui_lang == 'ar' %}محاسب{% else %}Accountant{% endif %}</option>
+            <option value="VIEWER">{% if request.session.ui_lang == 'ar' %}مُشاهد{% else %}Viewer{% endif %}</option>
+          </select>
+        </div>
+        {% if request.user|has_perm:'employees.manage' %}
+          <div class="ds-formActions" style="margin-top:12px;">
+            <button class="ds-btn ds-btn--primary" id="e-save" data-primary-action="employees">{% if request.session.ui_lang == 'ar' %}حفظ الموظف{% else %}Save Employee{% endif %}</button>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="ds-card ds-card--panel" style="margin-top:12px;">
+        <table class="ds-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="e-body"><tr><td colspan="5" class="ds-empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="ds-card ds-card--panel" style="margin-top:12px;">
+        <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}مصفوفة الصلاحيات{% else %}Role Permissions Matrix{% endif %}</div>
+        </div>
+        <table class="ds-table">
+          <thead>
+            <tr>
+              <th>{% if request.session.ui_lang == 'ar' %}الدور{% else %}Role{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}الصلاحيات{% else %}Permissions{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for role_code, perms in role_permissions.items %}
+              <tr>
+                <td>{{ role_code }}</td>
+                <td class="ds-muted">{{ perms|join:", " }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Notifications -->
+    <section class="ds-tabPanel" data-panel="notifications">
+        <div class="ds-card ds-card--panel">
+          <div class="ds-card__head">
+            <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}الإشعارات{% else %}Notifications{% endif %}</div>
+            <div class="ds-toolbar">
+              {% if request.user|has_perm:'settings.manage' %}
+                <button class="ds-btn" id="s-notify-sync">{% if request.session.ui_lang == 'ar' %}مزامنة التذكيرات{% else %}Sync Reminders{% endif %}</button>
+              {% endif %}
+              <button class="ds-btn" id="s-notify-clear">{% if request.session.ui_lang == 'ar' %}مسح الكل{% else %}Clear All{% endif %}</button>
+            </div>
+          </div>
+        <div class="ds-notifyList ds-notifyList--full" id="s-notify-list">
+          <div class="ds-empty">{% if request.session.ui_lang == 'ar' %}جاري التحميل…{% else %}Loading…{% endif %}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ds-tabPanel" data-panel="integrations">
+      <div class="ds-card ds-card--panel">
+        <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}ملفات التكامل{% else %}Integration Profiles{% endif %}</div>
+          <button class="ds-btn" id="s-integrations-refresh">{% if request.session.ui_lang == 'ar' %}تحديث{% else %}Refresh{% endif %}</button>
+        </div>
+        <div class="ds-muted" style="margin-bottom:10px;">
+          {% if request.session.ui_lang == 'ar' %}
+            إدارة إعدادات QuickBooks / Zoho وموفري التتبع عن بُعد (Telematics).
+          {% else %}
+            Manage QuickBooks/Zoho and telematics provider settings for admin use.
+          {% endif %}
+        </div>
+        <div id="s-integrations-list" class="ds-integrationGrid">
+          <div class="ds-empty">{% if request.session.ui_lang == 'ar' %}جارٍ التحميل...{% else %}Loading...{% endif %}</div>
+        </div>
+      </div>
+
+      <div class="ds-card ds-card--panel" style="margin-top:12px;">
+        <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}سجل المزامنة{% else %}Sync Logs{% endif %}</div>
+          <div class="ds-toolbar">
+            <select class="ds-input ds-input--small" id="s-int-log-type">
+              <option value="">{% if request.session.ui_lang == 'ar' %}كل التكاملات{% else %}All integrations{% endif %}</option>
+              <option value="ACCOUNTING_QUICKBOOKS">QuickBooks</option>
+              <option value="ACCOUNTING_ZOHO">Zoho Books</option>
+              <option value="TELEMATICS_PROVIDER_A">Telematics A</option>
+              <option value="TELEMATICS_PROVIDER_B">Telematics B</option>
+            </select>
+            <button class="ds-btn" id="s-int-log-refresh">{% if request.session.ui_lang == 'ar' %}تحديث{% else %}Refresh{% endif %}</button>
+          </div>
+        </div>
+        <table class="ds-table">
+          <thead>
+            <tr>
+              <th>{% if request.session.ui_lang == 'ar' %}الوقت{% else %}Time{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}النوع{% else %}Integration{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}الاتجاه{% else %}Direction{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}الملخص{% else %}Summary{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody id="s-int-log-body"><tr><td colspan="5" class="ds-empty">{% if request.session.ui_lang == 'ar' %}جارٍ التحميل...{% else %}Loading...{% endif %}</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="ds-tabPanel" data-panel="audit">
+      <div class="ds-card ds-card--panel">
+        <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}سجل النشاط{% else %}Audit Log{% endif %}</div>
+          <button class="ds-btn" id="s-audit-refresh">{% if request.session.ui_lang == 'ar' %}تحديث{% else %}Refresh{% endif %}</button>
+        </div>
+        <div class="ds-toolbar" style="margin-bottom:10px;">
+          <input class="ds-input" id="s-audit-query" placeholder="{% if request.session.ui_lang == 'ar' %}ابحث في السجل{% else %}Search logs{% endif %}">
+        </div>
+        <table class="ds-table">
+          <thead>
+            <tr>
+              <th>{% if request.session.ui_lang == 'ar' %}الوقت{% else %}Time{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}الإجراء{% else %}Action{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}المستخدم{% else %}User{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}الكيان{% else %}Entity{% endif %}</th>
+              <th>{% if request.session.ui_lang == 'ar' %}التفاصيل{% else %}Details{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody id="s-audit-body"><tr><td colspan="5" class="ds-empty">{% if request.session.ui_lang == 'ar' %}جارٍ التحميل…{% else %}Loading…{% endif %}</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Backup -->
+    <section class="ds-tabPanel" data-panel="backup">
+      <div class="ds-card ds-card--panel">
+        <div class="ds-toolbar ds-backupRow">
+          {% if request.user|has_perm:'settings.manage' %}
+            <button class="ds-btn" id="backup-export">{% if request.session.ui_lang == 'ar' %}تنزيل النسخ الاحتياطي{% else %}Download Backup{% endif %}</button>
+            <input class="ds-input" id="backup-file" type="file" accept=".zip">
+            <button class="ds-btn" id="backup-restore">{% if request.session.ui_lang == 'ar' %}استعادة النسخ الاحتياطي{% else %}Restore Backup{% endif %}</button>
+            <button class="ds-btn ds-btn--danger" id="backup-reset">{% if request.session.ui_lang == 'ar' %}إعادة ضبط المصنع{% else %}Factory Reset{% endif %}</button>
+          {% else %}
+            <div class="ds-muted">{% if request.session.ui_lang == 'ar' %}لا تملك صلاحية النسخ الاحتياطي والاستعادة.{% else %}You do not have permission to manage backups.{% endif %}</div>
+          {% endif %}
+        </div>
+        <div class="ds-muted" style="margin-top:10px;">
+          {% if request.session.ui_lang == 'ar' %}تتضمن النسخة الاحتياطية قاعدة البيانات والملفات المرفوعة. الاستعادة وإعادة الضبط عمليات مدمرة.{% else %}Backup includes database and uploaded media. Restore and reset are destructive operations.{% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- Database -->
+    <section class="ds-tabPanel" data-panel="database">
+      <div class="ds-card ds-card--panel">
+
+        <div class="ds-formGrid">
+          <label class="ds-label" for="db-provider">{% if request.session.ui_lang == 'ar' %}المزود{% else %}Provider{% endif %}</label>
+          <select class="ds-input" id="db-provider">
+            <option value="POSTGRES">PostgreSQL</option>
+            <option value="NEON">Neon</option>
+          </select>
+
+          <label class="ds-label" for="db-host">{% if request.session.ui_lang == 'ar' %}المضيف{% else %}Host{% endif %}</label>
+          <input class="ds-input" id="db-host" placeholder="{% if request.session.ui_lang == 'ar' %}المضيف{% else %}Host{% endif %}">
+
+          <label class="ds-label" for="db-port">{% if request.session.ui_lang == 'ar' %}المنفذ{% else %}Port{% endif %}</label>
+          <input class="ds-input" id="db-port" placeholder="{% if request.session.ui_lang == 'ar' %}المنفذ{% else %}Port{% endif %}">
+
+          <label class="ds-label" for="db-name">{% if request.session.ui_lang == 'ar' %}اسم قاعدة البيانات{% else %}Database Name{% endif %}</label>
+          <input class="ds-input" id="db-name" placeholder="{% if request.session.ui_lang == 'ar' %}اسم قاعدة البيانات{% else %}Database Name{% endif %}">
+
+          <label class="ds-label" for="db-user">{% if request.session.ui_lang == 'ar' %}المستخدم{% else %}User{% endif %}</label>
+          <input class="ds-input" id="db-user" placeholder="{% if request.session.ui_lang == 'ar' %}المستخدم{% else %}User{% endif %}">
+
+          <label class="ds-label" for="db-pass">{% if request.session.ui_lang == 'ar' %}كلمة المرور{% else %}Password{% endif %}</label>
+          <input class="ds-input" id="db-pass" placeholder="{% if request.session.ui_lang == 'ar' %}كلمة المرور{% else %}Password{% endif %}">
+
+          <label class="ds-label" for="db-ssl">{% if request.session.ui_lang == 'ar' %}وضع SSL{% else %}SSL Mode{% endif %}</label>
+          <input class="ds-input" id="db-ssl" placeholder="{% if request.session.ui_lang == 'ar' %}وضع SSL{% else %}SSL Mode{% endif %}">
+        </div>
+
+        <div class="ds-toolbar">
+          {% if request.user|has_perm:'settings.manage' %}
+            <button class="ds-btn" id="db-test">{% if request.session.ui_lang == 'ar' %}اختبار الاتصال{% else %}Test Connection{% endif %}</button>
+            <button class="ds-btn" id="db-migrate">{% if request.session.ui_lang == 'ar' %}ترحيل SQLite → PostgreSQL/Neon{% else %}Migrate SQLite → PostgreSQL/Neon{% endif %}</button>
+            <button class="ds-btn ds-btn--primary" id="db-save" data-primary-action="database">{% if request.session.ui_lang == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+          {% endif %}
+        </div>
+
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="ds-tabPanel" data-panel="about">
+      <div class="ds-card ds-card--panel">
+        <div class="ds-text">
+          <b>DriveSphere</b><br>
+          Car Rental Management System<br><br>
+            <div style="margin-bottom:8px;">Developed By:<br><strong>Deedarian Software Solutions</strong></div>
+            <div class="ds-contact" style="display:flex;gap:16px;align-items:center;margin-bottom:8px;">
+              <div class="ds-contact__item" style="display:flex;align-items:center;gap:8px;">
+                <span aria-hidden="true">📞</span>
+                <a href="tel:+96872848463">+968 72848463</a>
+              </div>
+              <div class="ds-contact__item" style="display:flex;align-items:center;gap:8px;">
+                <span aria-hidden="true">🟢</span>
+                <a href="https://wa.me/96899850826" target="_blank" rel="noopener noreferrer">+968 99850826</a>
+              </div>
+            </div>
+            <div>Version 1.0</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  {% if request.user|has_perm:'settings.manage' %}
+    <div class="ds-settings-actions">
+      <button class="ds-btn" id="settings-apply">{% if request.session.ui_lang == 'ar' %}تطبيق{% else %}Apply{% endif %}</button>
+      <button class="ds-btn ds-btn--primary" id="settings-save">{% if request.session.ui_lang == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+    </div>
+  {% endif %}
+
+</div>
+
+<style>
+  .ds-backupRow {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .ds-integrationGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .ds-integrationCard {
+    border: 1px solid rgba(20,35,60,0.12);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.82);
+    padding: 12px;
+  }
+  .ds-integrationCard__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+  }
+  .ds-integrationCard__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #5b6780;
+  }
+  .ds-integrationCard__actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+</style>
+
+<script src="/static/js/settings.js"></script>
+<style>
+  .ds-logoField {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .ds-logoPreview {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    border: 1px solid rgba(20,35,60,0.12);
+    border-radius: 8px;
+    background: #fff;
+  }
+</style>
+{% endblock %}

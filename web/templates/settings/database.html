@@ -1,0 +1,19 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}Settings{% endblock %}
+
+{% block content %}
+  <div class="ds-card ds-card--wide">
+    <div class="ds-card__head">
+      <div class="ds-card__title">Database</div>
+      <div class="ds-card__sub">PostgreSQL / Neon Connection (Chunk 1: Test Only)</div>
+    </div>
+
+    <div class="ds-alert {% if db_ok %}ds-alert--success{% else %}ds-alert--danger{% endif %}">
+      {{ db_message }}
+    </div>
+
+    <div class="ds-muted" style="margin-top: 10px;">
+      Migration (SQLite → PostgreSQL/Neon) And Credentials UI Will Be Implemented In Settings Later As You Requested.
+    </div>
+  </div>
+{% endblock %}

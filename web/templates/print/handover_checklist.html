@@ -1,0 +1,74 @@
+{% extends "print/_base.html" %}
+{% block content %}
+{% if request.session.ui_lang == 'ar' %}
+<style>
+  .report-spacer { height: 32mm !important; }
+  .page { direction: rtl; }
+  table, th, td { direction: rtl; }
+  th, td { text-align: right; }
+</style>
+{% endif %}
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}قائمة فحص التسليم{% else %}Handover Checklist{% endif %}</h2>
+  <table>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}الحجز{% else %}Booking{% endif %}</th>
+      <td>#{{ booking.id }}</td>
+      <th>{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</th>
+      <td>{{ booking.customer.name }}</td>
+    </tr>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</th>
+      <td>{{ booking.vehicle.brand.name }} {{ booking.vehicle.model.name }} ({{ booking.vehicle.plate_number }})</td>
+      <th>{% if request.session.ui_lang == 'ar' %}الاستلام{% else %}Pickup{% endif %}</th>
+      <td>{{ booking.pickup_date }}</td>
+    </tr>
+  </table>
+</div>
+
+{% if booking.handover %}
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}فحص{% else %}Inspection{% endif %}</h2>
+  <table>
+    <tr><th>{% if request.session.ui_lang == 'ar' %}المفتش{% else %}Inspector{% endif %}</th><td>{{ booking.handover.inspector|default:"-" }}</td><th>{% if request.session.ui_lang == 'ar' %}الطابع الزمني{% else %}Timestamp{% endif %}</th><td>{{ booking.handover.timestamp }}</td></tr>
+    <tr><th>{% if request.session.ui_lang == 'ar' %}عداد الخروج{% else %}Odometer Out{% endif %}</th><td>{{ booking.handover.odometer_out_km }} Km</td><th>{% if request.session.ui_lang == 'ar' %}الوقود عند الخروج{% else %}Fuel Out{% endif %}</th><td>{{ booking.handover.fuel_out_percent }}%</td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}الملحقات{% else %}Accessories{% endif %}</h2>
+  <table>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}الإطار الاحتياطي{% else %}Spare{% endif %}</th>
+      <td>{% if request.session.ui_lang == 'ar' %}{{ booking.handover.accessory_spare|yesno:"نعم,لا" }}{% else %}{{ booking.handover.accessory_spare|yesno:"Yes,No" }}{% endif %}</td>
+      <th>{% if request.session.ui_lang == 'ar' %}الرافعة{% else %}Jack{% endif %}</th>
+      <td>{% if request.session.ui_lang == 'ar' %}{{ booking.handover.accessory_jack|yesno:"نعم,لا" }}{% else %}{{ booking.handover.accessory_jack|yesno:"Yes,No" }}{% endif %}</td>
+    </tr>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}المثلث{% else %}Triangle{% endif %}</th>
+      <td>{% if request.session.ui_lang == 'ar' %}{{ booking.handover.accessory_triangle|yesno:"نعم,لا" }}{% else %}{{ booking.handover.accessory_triangle|yesno:"Yes,No" }}{% endif %}</td>
+      <th>{% if request.session.ui_lang == 'ar' %}الأوراق{% else %}Docs{% endif %}</th>
+      <td>{% if request.session.ui_lang == 'ar' %}{{ booking.handover.accessory_docs|yesno:"نعم,لا" }}{% else %}{{ booking.handover.accessory_docs|yesno:"Yes,No" }}{% endif %}</td>
+    </tr>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}مقعد الطفل{% else %}Child Seat{% endif %}</th>
+      <td>{% if request.session.ui_lang == 'ar' %}{{ booking.handover.accessory_child_seat|yesno:"نعم,لا" }}{% else %}{{ booking.handover.accessory_child_seat|yesno:"Yes,No" }}{% endif %}</td>
+      <th>{% if request.session.ui_lang == 'ar' %}نظام تحديد المواقع{% else %}GPS{% endif %}</th>
+      <td>{% if request.session.ui_lang == 'ar' %}{{ booking.handover.accessory_gps|yesno:"نعم,لا" }}{% else %}{{ booking.handover.accessory_gps|yesno:"Yes,No" }}{% endif %}</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}توقيع العميل{% else %}Customer Signature{% endif %}</h2>
+  {% if booking.handover.customer_signature_data %}
+    <div><img alt="Signature" src="{{ booking.handover.customer_signature_data }}" style="max-height:100px; max-width:100%;" /></div>
+  {% else %}
+    <div class="muted">{% if request.session.ui_lang == 'ar' %}لا يوجد توقيع.{% else %}No signature captured.{% endif %}</div>
+  {% endif %}
+</div>
+{% else %}
+<div class="section"><div class="muted">{% if request.session.ui_lang == 'ar' %}لا يوجد سجل تسليم.{% else %}No handover record available.{% endif %}</div></div>
+{% endif %}
+{% endblock %}

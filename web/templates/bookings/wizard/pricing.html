@@ -1,0 +1,30 @@
+{% extends "bookings/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}تفاصيل التسعير{% else %}Pricing Details{% endif %}</h3>
+
+<div class="ds-summary">
+  <div>{% if request.session.ui_lang == 'ar' %}السعر اليومي{% else %}Daily Rate{% endif %}: <b>{{ daily_rate }}</b></div>
+  <div>{% if request.session.ui_lang == 'ar' %}الأيام{% else %}Days{% endif %}: <b>{{ days }}</b></div>
+  <div>{% if request.session.ui_lang == 'ar' %}الإضافات{% else %}Extras{% endif %}: <b>{{ extras_total }}</b></div>
+  <div>{% if request.session.ui_lang == 'ar' %}الإجمالي الفرعي{% else %}Subtotal{% endif %}: <b>{{ subtotal }}</b></div>
+</div>
+
+<form method="post" class="ds-form" style="margin-top:12px;">
+  {% csrf_token %}
+  <div class="ds-formGrid">
+    <input class="ds-input" name="vat_rate" placeholder="{% if request.session.ui_lang == 'ar' %}نسبة الضريبة (مثال 0.050){% else %}VAT Rate (e.g. 0.050){% endif %}" value="{{ data.vat_rate|default:'0' }}">
+    {% if vehicle %}
+      <input class="ds-input" name="deposit_amount" placeholder="{% if request.session.ui_lang == 'ar' %}مبلغ التأمين{% else %}Deposit Amount{% endif %}" value="{{ data.deposit_amount|default:vehicle.deposit }}">
+    {% else %}
+      <input class="ds-input" name="deposit_amount" placeholder="Deposit Amount" value="{{ data.deposit_amount|default:'0' }}">
+    {% endif %}
+    <input class="ds-input" name="notes" placeholder="{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}" value="{{ data.notes|default:'' }}">
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn ds-btn--ghost" href="{{ wizard_base }}/extras/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

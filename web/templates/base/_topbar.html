@@ -1,0 +1,59 @@
+{% with ui_lang=request.session.ui_lang|default:request.user.preferred_language|default:"en" %}
+<div class="ds-topbar">
+  <div class="ds-topbar__left">
+    <h1 class="ds-page-title">{% block heading %}Dashboard{% endblock %}</h1>
+  </div>
+
+  <div class="ds-topbar__right">
+    <div class="ds-topbar__dropdown" data-dropdown>
+      <button class="ds-topbar__pill ds-topbar__pill--search" type="button" data-dropdown-toggle="search" aria-expanded="false" aria-controls="ds-search-panel">
+        <span class="ds-pill__icon">🔎</span>
+      </button>
+      <div class="ds-topbar__panel ds-topbar__panel--search" id="ds-search-panel" data-dropdown-panel="search">
+        <form class="ds-topbar__searchForm" action="/bookings/" method="get">
+          <input class="ds-input" name="q" placeholder="{% if ui_lang == 'ar' %}ابحث عن الحجز بالعميل أو الهاتف أو اللوحة{% else %}Search bookings by customer, phone, plate{% endif %}">
+          <div class="ds-topbar__searchActions">
+            <button class="ds-btn ds-btn--primary" type="submit">{% if ui_lang == 'ar' %}بحث{% else %}Search{% endif %}</button>
+          </div>
+        </form>
+        <div class="ds-topbar__hint">{% if ui_lang == 'ar' %}تظهر النتائج في صفحة الحجوزات.{% else %}Results open in Bookings.{% endif %}</div>
+      </div>
+    </div>
+
+    <div class="ds-topbar__dropdown" data-dropdown>
+      <button class="ds-topbar__pill ds-topbar__pill--notify" type="button" data-dropdown-toggle="notify" aria-expanded="false" aria-controls="ds-notify-panel">
+        <span class="ds-pill__icon">🔔</span>
+        <span class="ds-pill__dot" id="ds-notify-dot"></span>
+      </button>
+      <div class="ds-topbar__panel ds-topbar__panel--notify" id="ds-notify-panel" data-dropdown-panel="notify">
+        <div class="ds-topbar__panelTitle">{% if ui_lang == 'ar' %}الإشعارات{% else %}Notifications{% endif %}</div>
+        <div class="ds-notifyList" id="ds-notify-list">
+          <div class="ds-empty">Loading…</div>
+        </div>
+        <button class="ds-topbar__panelBtn" type="button" id="ds-notify-clear">{% if ui_lang == 'ar' %}وضع الكل كمقروء{% else %}Mark All Read{% endif %}</button>
+      </div>
+    </div>
+
+    <div class="ds-lang-toggle" title="{% if ui_lang == 'ar' %}اللغة{% else %}Language{% endif %}">
+      <button class="ds-lang-toggle__btn {% if ui_lang == 'en' %}is-active{% endif %}" type="button" data-lang="en">EN</button>
+      <button class="ds-lang-toggle__btn {% if ui_lang == 'ar' %}is-active{% endif %}" type="button" data-lang="ar">AR</button>
+    </div>
+
+    <div class="ds-user">
+      <span class="ds-user__avatar ds-user__avatar--icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="img" aria-label="User">
+          <path d="M12 12c2.761 0 5-2.239 5-5S14.761 2 12 2 7 4.239 7 7s2.239 5 5 5Zm0 2c-4.418 0-8 2.239-8 5v3h16v-3c0-2.761-3.582-5-8-5Z" />
+        </svg>
+      </span>
+      <div class="ds-user__meta">
+        <div class="ds-user__name">{{ request.user.username|default:request.user.email|cut:'@local' }}</div>
+        <div class="ds-user__sub">
+          {% if ds_active_branch %}{{ ds_active_branch.name }}{% else %}No Branch{% endif %}
+          <span class="ds-dot">•</span>
+          <span id="dsClock">--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endwith %}

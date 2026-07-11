@@ -1,0 +1,42 @@
+{% extends "vehicles/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}التسعير والحالة{% else %}Pricing And Status{% endif %}</h3>
+
+<form method="post" class="ds-form">
+  {% csrf_token %}
+  <div class="ds-formGrid">
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</label>
+      <select class="ds-input" name="status">
+        <option value="AVAILABLE" {% if data.status == 'AVAILABLE' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}متاحة{% else %}Available{% endif %}</option>
+        <option value="RESERVED" {% if data.status == 'RESERVED' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}محجوزة{% else %}Reserved{% endif %}</option>
+        <option value="RENTED" {% if data.status == 'RENTED' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}مستأجرة{% else %}Rented{% endif %}</option>
+        <option value="MAINTENANCE" {% if data.status == 'MAINTENANCE' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}صيانة{% else %}Maintenance{% endif %}</option>
+        <option value="INACTIVE" {% if data.status == 'INACTIVE' %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}غير نشطة{% else %}Inactive{% endif %}</option>
+      </select>
+    </div>
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}السعر اليومي{% else %}Daily Rate{% endif %}</label>
+      <input class="ds-input" name="daily_rate" value="{{ data.daily_rate|default:'0' }}">
+    </div>
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الوديعة{% else %}Deposit{% endif %}</label>
+      <input class="ds-input" name="deposit" value="{{ data.deposit|default:'0' }}">
+    </div>
+    <div class="ds-field" style="grid-column:1/-1;">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الوسوم{% else %}Tags{% endif %}</label>
+      <input class="ds-input" name="tags" value="{{ data.tags|default:'' }}">
+    </div>
+    <div class="ds-field" style="grid-column:1/-1;">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</label>
+      <textarea class="ds-input" name="notes" rows="3">{{ data.notes|default:'' }}</textarea>
+    </div>
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn" href="/vehicles/new/specs/">{% if request.session.ui_lang == 'ar' %}عودة{% else %}Back{% endif %}</a>
+    <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

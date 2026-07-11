@@ -1,0 +1,86 @@
+{% extends "base/_app_shell.html" %}
+
+{% block heading %}{% if request.session.ui_lang == 'ar' %}مهمة صيانة جديدة{% else %}New Maintenance Task{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page">
+
+  <div class="ds-card ds-card--panel">
+
+    {% if success %}
+      <div class="ds-alert ds-alert--success">{% if request.session.ui_lang == 'ar' %}تم حفظ المهمة بنجاح.{% else %}Task Saved Successfully.{% endif %}</div>
+    {% endif %}
+
+    <form method="post" class="ds-form">
+      {% csrf_token %}
+
+    <div class="ds-formGrid">
+      <label class="ds-label" for="m-vehicle-id">{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</label>
+      <select class="ds-input" name="vehicle_id" id="m-vehicle-id" required>
+        <option value="">{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</option>
+        {% for v in vehicles %}
+          <option value="{{ v.id }}" data-plate="{{ v.plate_number }}">{{ v.brand.name }} {{ v.model.name }} {{ v.year }}</option>
+        {% endfor %}
+      </select>
+
+      <label class="ds-label" for="m-plate-id">{% if request.session.ui_lang == 'ar' %}اللوحة{% else %}Plate{% endif %}</label>
+      <select class="ds-input" id="m-plate-id">
+        <option value="">{% if request.session.ui_lang == 'ar' %}اللوحة{% else %}Plate{% endif %}</option>
+        {% for v in vehicles %}
+          <option value="{{ v.id }}" data-plate="{{ v.plate_number }}">{{ v.plate_number }}</option>
+        {% endfor %}
+      </select>
+
+      <label class="ds-label" for="m-task-type">{% if request.session.ui_lang == 'ar' %}نوع المهمة{% else %}Task Type{% endif %}</label>
+      <select class="ds-input" name="type" id="m-task-type">
+        <option value="Service">{% if request.session.ui_lang == 'ar' %}صيانة{% else %}Service{% endif %}</option>
+        <option value="Repair">{% if request.session.ui_lang == 'ar' %}إصلاح{% else %}Repair{% endif %}</option>
+        <option value="Inspection">{% if request.session.ui_lang == 'ar' %}تفتيش{% else %}Inspection{% endif %}</option>
+      </select>
+
+      <label class="ds-label" for="m-priority">{% if request.session.ui_lang == 'ar' %}الأولوية{% else %}Priority{% endif %}</label>
+      <select class="ds-input" name="priority" id="m-priority">
+        <option value="Low">{% if request.session.ui_lang == 'ar' %}منخفض{% else %}Low{% endif %}</option>
+        <option value="Medium" selected>{% if request.session.ui_lang == 'ar' %}متوسط{% else %}Medium{% endif %}</option>
+        <option value="High">{% if request.session.ui_lang == 'ar' %}عالي{% else %}High{% endif %}</option>
+      </select>
+
+      <label class="ds-label" for="m-assignee">{% if request.session.ui_lang == 'ar' %}المكلف{% else %}Assignee{% endif %}</label>
+      <input class="ds-input" id="m-assignee" value="{{ request.user.email }}" readonly>
+
+      <label class="ds-label" for="m-due-date">{% if request.session.ui_lang == 'ar' %}تاريخ الاستحقاق{% else %}Due Date{% endif %}</label>
+      <input class="ds-input" id="m-due-date" name="due_date" type="date" placeholder="{% if request.session.ui_lang == 'ar' %}تاريخ الاستحقاق{% else %}Due Date{% endif %}">
+
+      <label class="ds-label" for="m-est-cost">{% if request.session.ui_lang == 'ar' %}التكلفة المقدرة{% else %}Estimated Cost{% endif %}</label>
+      <input class="ds-input" id="m-est-cost" name="est_cost" placeholder="{% if request.session.ui_lang == 'ar' %}التكلفة المقدرة{% else %}Estimated Cost{% endif %}">
+
+      <label class="ds-label" for="m-notes">{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</label>
+      <textarea class="ds-input" id="m-notes" name="notes" placeholder="{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}"></textarea>
+    </div>
+
+    <div class="ds-formActions">
+      <a class="ds-btn" href="/maintenance/">{% if request.session.ui_lang == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+      <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}حفظ المهمة{% else %}Save Task{% endif %}</button>
+    </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    const vehicleSelect = document.getElementById("m-vehicle-id");
+    const plateSelect = document.getElementById("m-plate-id");
+    if (!vehicleSelect || !plateSelect) return;
+
+    vehicleSelect.addEventListener("change", () => {
+      plateSelect.value = vehicleSelect.value;
+    });
+    plateSelect.addEventListener("change", () => {
+      vehicleSelect.value = plateSelect.value;
+    });
+  })();
+</script>
+{% endblock %}

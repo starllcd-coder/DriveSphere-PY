@@ -1,0 +1,61 @@
+{% extends "bookings/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}الإضافات{% else %}Extras{% endif %}</h3>
+
+<form method="post" class="ds-form">
+  {% csrf_token %}
+
+  <div class="ds-extras">
+    <div class="ds-extraRow">
+      <label class="ds-check"><input type="checkbox" name="extra_baby_seat" {% if extras_map.baby_seat.checked %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}مقعد طفل{% else %}Baby Seat{% endif %}</label>
+      <div class="ds-extraRow__rate">
+        <input class="ds-input ds-input--small" name="extra_rate_baby_seat" value="{{ extras_map.baby_seat.rate }}">
+        <input class="ds-input ds-input--small" name="extra_qty_baby_seat" value="{{ extras_map.baby_seat.qty }}">
+      </div>
+      <input type="hidden" name="extra_label_baby_seat" value="Baby Seat">
+    </div>
+
+    <div class="ds-extraRow">
+      <label class="ds-check"><input type="checkbox" name="extra_gps" {% if extras_map.gps.checked %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}نظام تحديد المواقع{% else %}GPS{% endif %}</label>
+      <div class="ds-extraRow__rate">
+        <input class="ds-input ds-input--small" name="extra_rate_gps" value="{{ extras_map.gps.rate }}">
+        <input class="ds-input ds-input--small" name="extra_qty_gps" value="{{ extras_map.gps.qty }}">
+      </div>
+      <input type="hidden" name="extra_label_gps" value="GPS">
+    </div>
+
+    <div class="ds-extraRow">
+      <label class="ds-check"><input type="checkbox" name="extra_driver_service" {% if extras_map.driver_service.checked %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}خدمة سائق{% else %}Driver Service{% endif %}</label>
+      <div class="ds-extraRow__rate">
+        <input class="ds-input ds-input--small" name="extra_rate_driver_service" value="{{ extras_map.driver_service.rate }}">
+        <input class="ds-input ds-input--small" name="extra_qty_driver_service" value="{{ extras_map.driver_service.qty }}">
+      </div>
+      <input type="hidden" name="extra_label_driver_service" value="Driver Service">
+    </div>
+
+    <div class="ds-extraRow">
+      <label class="ds-check"><input type="checkbox" name="extra_fuel_package" {% if extras_map.fuel_package.checked %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}حزمة وقود{% else %}Fuel Package{% endif %}</label>
+      <div class="ds-extraRow__rate">
+        <input class="ds-input ds-input--small" name="extra_rate_fuel_package" value="{{ extras_map.fuel_package.rate }}">
+        <input class="ds-input ds-input--small" name="extra_qty_fuel_package" value="{{ extras_map.fuel_package.qty }}">
+      </div>
+      <input type="hidden" name="extra_label_fuel_package" value="Fuel Package">
+    </div>
+
+    <div class="ds-extraRow">
+      <label class="ds-check"><input type="checkbox" name="extra_wifi_router" {% if extras_map.wifi_router.checked %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}راوتر واي فاي{% else %}WiFi Router{% endif %}</label>
+      <div class="ds-extraRow__rate">
+        <input class="ds-input ds-input--small" name="extra_rate_wifi_router" value="{{ extras_map.wifi_router.rate }}">
+        <input class="ds-input ds-input--small" name="extra_qty_wifi_router" value="{{ extras_map.wifi_router.qty }}">
+      </div>
+      <input type="hidden" name="extra_label_wifi_router" value="WiFi Router">
+    </div>
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn ds-btn--ghost" href="{{ wizard_base }}/vehicle/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

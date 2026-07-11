@@ -1,0 +1,52 @@
+{% extends "base/_app_shell.html" %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}{% if is_edit %}تعديل المدفوعات{% else %}مدفوعات جديدة{% endif %}{% else %}{% if is_edit %}Edit Payment{% else %}New Payment{% endif %}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page">
+  <div class="ds-card ds-card--wide">
+    <div class="ds-card__head">
+      <div>
+        <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}{% if is_edit %}تعديل المدفوعات{% else %}مدفوعات جديدة{% endif %}{% else %}{% if is_edit %}Edit Payment{% else %}New Payment{% endif %}{% endif %}</div>
+        <div class="ds-card__sub">{% if request.session.ui_lang == 'ar' %}تسجيل تفاصيل الدفع لحجز{% else %}Record payment details for a booking{% endif %}</div>
+      </div>
+      <a class="ds-btn ds-btn--ghost" href="/payments/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    </div>
+
+    {% if error %}
+      <div class="ds-alert ds-alert--danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" class="ds-form" style="margin-top:12px;">
+      {% csrf_token %}
+      <div class="ds-formGrid">
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}معرف الحجز{% else %}Booking ID{% endif %}</label>
+          <input class="ds-input" name="booking_id" placeholder="{% if request.session.ui_lang == 'ar' %}معرف الحجز{% else %}Booking ID{% endif %}" value="{% if is_edit %}{{ payment.booking_id }}{% else %}{{ payment.booking_id|default:'' }}{% endif %}" {% if is_edit %}readonly{% endif %} required>
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}المبلغ{% else %}Amount{% endif %}</label>
+          <input class="ds-input" name="amount" placeholder="{% if request.session.ui_lang == 'ar' %}المبلغ{% else %}Amount{% endif %}" value="{% if is_edit %}{{ payment.amount }}{% else %}{{ payment.amount|default:'' }}{% endif %}" required>
+        </div>
+        <div class="ds-field">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الطريقة{% else %}Method{% endif %}</label>
+          <select class="ds-input" name="method">
+            <option value="CASH" {% if payment.method == "CASH" or not payment.method %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}نقداً{% else %}Cash{% endif %}</option>
+            <option value="CARD" {% if payment.method == "CARD" %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}بطاقة{% else %}Card{% endif %}</option>
+            <option value="BANK_TRANSFER" {% if payment.method == "BANK_TRANSFER" %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}تحويل بنكي{% else %}Bank Transfer{% endif %}</option>
+            <option value="OTHER" {% if payment.method == "OTHER" %}selected{% endif %}>{% if request.session.ui_lang == 'ar' %}أخرى{% else %}Other{% endif %}</option>
+          </select>
+        </div>
+        <div class="ds-field" style="grid-column:1/-1;">
+          <label class="ds-label">{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</label>
+          <textarea class="ds-input" name="notes" rows="3" placeholder="{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}">{% if is_edit %}{{ payment.notes|default:'' }}{% else %}{{ payment.notes|default:'' }}{% endif %}</textarea>
+        </div>
+      </div>
+
+      <div class="ds-wizard__actions" style="margin-top:12px;">
+        <a class="ds-btn ds-btn--ghost" href="/payments/">{% if request.session.ui_lang == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+        <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "bookings/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}التسليم{% else %}Handover{% endif %}</h3>
+
+<form method="post" class="ds-form">
+  {% csrf_token %}
+  <input type="hidden" name="inspector_signature_data" id="inspectorSignatureData">
+
+  <div class="ds-formGrid">
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}المفتش{% else %}Inspector{% endif %}</label>
+      <input class="ds-input" value="{{ request.user.email }}" disabled>
+    </div>
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الطابع الزمني{% else %}Timestamp{% endif %}</label>
+      <input class="ds-input" value="{{ now|date:'Y-m-d H:i' }}" disabled>
+    </div>
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}عداد المسافة الخارج (كم){% else %}Odometer Out (Km){% endif %}</label>
+      <input class="ds-input" name="odometer_out_km" value="{{ data.handover.odometer_out_km|default:'0' }}">
+    </div>
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}نسبة الوقود الخارج{% else %}Fuel Out %{% endif %}</label>
+      <input class="ds-input" name="fuel_out_percent" value="{{ data.handover.fuel_out_percent|default:'100' }}">
+    </div>
+  </div>
+
+  <div class="ds-divider"></div>
+
+  <div class="ds-formGrid">
+    <label class="ds-check"><input type="checkbox" name="checklist_spare" {% if data.handover.checklist.spare %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}احتياطي{% else %}Spare{% endif %}</label>
+    <label class="ds-check"><input type="checkbox" name="checklist_jack" {% if data.handover.checklist.jack %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}رافعة{% else %}Jack{% endif %}</label>
+    <label class="ds-check"><input type="checkbox" name="checklist_triangle" {% if data.handover.checklist.triangle %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}مثلث تحذيري{% else %}Triangle{% endif %}</label>
+    <label class="ds-check"><input type="checkbox" name="checklist_docs" {% if data.handover.checklist.docs %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}المستندات{% else %}Docs{% endif %}</label>
+    <label class="ds-check"><input type="checkbox" name="checklist_child_seat" {% if data.handover.checklist.child_seat %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}مقعد طفل{% else %}Child Seat{% endif %}</label>
+    <label class="ds-check"><input type="checkbox" name="checklist_gps" {% if data.handover.checklist.gps %}checked{% endif %}> {% if request.session.ui_lang == 'ar' %}نظام تحديد المواقع{% else %}GPS{% endif %}</label>
+  </div>
+
+  <div class="ds-divider"></div>
+
+  <div class="ds-field">
+    <label class="ds-label">{% if request.session.ui_lang == 'ar' %}توقيع المفتش{% else %}Inspector Signature{% endif %}</label>
+    <canvas id="inspectorSignature" class="ds-sign__canvas"></canvas>
+    <button type="button" class="ds-btn ds-btn--small" id="inspectorSignatureClear">{% if request.session.ui_lang == 'ar' %}مسح{% else %}Clear{% endif %}</button>
+  </div>
+
+  <div class="ds-field" style="margin-top:12px;">
+    <label class="ds-check">
+      <input type="checkbox" name="checkout_now" {% if data.handover.checkout_now %}checked{% endif %}>
+      {% if request.session.ui_lang == 'ar' %}تسجيل الخروج الآن (تعيين الحالة إلى مسلم){% else %}Check Out Now (Set Status To Checked Out){% endif %}
+    </label>
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn ds-btn--ghost" href="{{ wizard_base }}/signature/">{% if request.session.ui_lang == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+  </div>
+</form>
+{% endblock %}
+
+{% block wizard_js %}
+<script src="/static/js/wizard_signature.js" defer></script>
+{% endblock %}

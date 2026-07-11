@@ -1,0 +1,181 @@
+{% extends "vehicles/wizard/_base.html" %}
+
+{% block wizard_content %}
+<h3 class="ds-h3">{% if request.session.ui_lang == 'ar' %}تفاصيل المركبة{% else %}Vehicle Details{% endif %}</h3>
+
+<form method="post" class="ds-form">
+  {% csrf_token %}
+  <div class="ds-formGrid">
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رقم اللوحة{% else %}Plate Number{% endif %}</label>
+      <input class="ds-input" name="plate_number" value="{{ data.plate_number|default:'' }}" required>
+    </div>
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}رقم الهيكل (VIN){% else %}VIN{% endif %}</label>
+      <input class="ds-input" name="vin" value="{{ data.vin|default:'' }}">
+    </div>
+
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}العلامة{% else %}Brand{% endif %}</label>
+      <div class="ds-inputWrap">
+        <select class="ds-input" name="brand_id" id="vw-brand" data-selected="{{ data.brand_id|default:'' }}">
+          <option value="">{% if request.session.ui_lang == 'ar' %}اختر العلامة{% else %}Select Brand{% endif %}</option>
+          {% for b in brands %}
+            <option value="{{ b.id }}" {% if data.brand_id|default:'' == b.id|stringformat:'s' %}selected{% endif %}>{{ b.name }}</option>
+          {% endfor %}
+        </select>
+        <button type="button" class="ds-chipBtn" id="vw-add-brand" title="Add Brand">+</button>
+      </div>
+    </div>
+
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}الموديل{% else %}Model{% endif %}</label>
+      <div class="ds-inputWrap">
+        <select class="ds-input" name="model_id" id="vw-model" data-selected="{{ data.model_id|default:'' }}">
+          <option value="">{% if request.session.ui_lang == 'ar' %}اختر الموديل{% else %}Select Model{% endif %}</option>
+          {% for m in models %}
+            <option value="{{ m.id }}" {% if data.model_id|default:'' == m.id|stringformat:'s' %}selected{% endif %}>{{ m.name }}</option>
+          {% endfor %}
+        </select>
+        <button type="button" class="ds-chipBtn" id="vw-add-model" title="Add Model">+</button>
+      </div>
+    </div>
+
+    <div class="ds-field">
+      <label class="ds-label">{% if request.session.ui_lang == 'ar' %}السنة{% else %}Year{% endif %}</label>
+      <select class="ds-input" name="year">
+        <option value="">{% if request.session.ui_lang == 'ar' %}اختر السنة{% else %}Select Year{% endif %}</option>
+        {% for y in years %}
+          <option value="{{ y }}" {% if data.year|default:'' == y|stringformat:'s' %}selected{% endif %}>{{ y }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="ds-wizard__actions">
+    <a class="ds-btn" href="/vehicles/">{% if request.session.ui_lang == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    <button class="ds-btn ds-btn--primary" type="submit">{% if request.session.ui_lang == 'ar' %}التالي{% else %}Next{% endif %}</button>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    function isArabicClient() {
+      return document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+    }
+    const brand = document.getElementById("vw-brand");
+    const model = document.getElementById("vw-model");
+    const addBrand = document.getElementById("vw-add-brand");
+    const addModel = document.getElementById("vw-add-model");
+    if (!brand || !model) return;
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+      return "";
+    }
+    const CSRF = getCookie("csrftoken");
+
+    async function loadModels(brandId, preferredModel) {
+      model.innerHTML = '<option value="">Select Model</option>';
+      if (!brandId) return;
+      const res = await fetch(`/api/vehicle-models/?brand_id=${encodeURIComponent(brandId)}`, {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+      });
+      const data = await res.json();
+      if (!data.ok) return;
+      (data.results || []).forEach((m) => {
+        const opt = document.createElement("option");
+        opt.value = String(m.id);
+        opt.textContent = m.name;
+        model.appendChild(opt);
+      });
+      if (preferredModel) {
+        model.value = String(preferredModel);
+      }
+    }
+
+    async function loadBrands(preferredBrand) {
+      const res = await fetch("/api/vehicle-brands/", {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+      });
+      const data = await res.json();
+      if (!data.ok) return;
+      brand.innerHTML = '<option value="">Select Brand</option>';
+      (data.results || []).forEach((b) => {
+        const opt = document.createElement("option");
+        opt.value = String(b.id);
+        opt.textContent = b.name;
+        brand.appendChild(opt);
+      });
+      if (preferredBrand) {
+        brand.value = String(preferredBrand);
+      }
+    }
+
+    async function quickAddBrand() {
+      const name = prompt(isArabicClient() ? 'أدخل اسم العلامة الجديدة' : 'Enter New Brand Name');
+      if (!name) return;
+      const res = await fetch("/api/vehicle-brands/create/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+          "X-CSRFToken": CSRF,
+        },
+        body: JSON.stringify({ name })
+      });
+      const data = await res.json();
+      if (!data.ok) return alert(data.error || (isArabicClient() ? 'فشل' : 'Failed'));
+      const opt = document.createElement("option");
+      opt.value = String(data.brand_id);
+      opt.textContent = name;
+      brand.appendChild(opt);
+      brand.value = String(data.brand_id);
+      loadModels(brand.value);
+    }
+
+    async function quickAddModel() {
+      if (!brand.value) return alert(isArabicClient() ? 'اختر العلامة أولاً' : 'Select Brand First');
+      const name = prompt(isArabicClient() ? 'أدخل اسم الموديل الجديد' : 'Enter New Model Name');
+      if (!name) return;
+      const res = await fetch("/api/vehicle-models/create/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+          "X-CSRFToken": CSRF,
+        },
+        body: JSON.stringify({ brand_id: Number(brand.value), name })
+      });
+      const data = await res.json();
+      if (!data.ok) return alert(data.error || (isArabicClient() ? 'فشل' : 'Failed'));
+      const opt = document.createElement("option");
+      opt.value = String(data.model_id);
+      opt.textContent = name;
+      model.appendChild(opt);
+      model.value = String(data.model_id);
+    }
+
+    const initialBrand = brand.getAttribute("data-selected") || brand.value;
+    const initialModel = model.getAttribute("data-selected") || model.value;
+
+    if (brand.options.length <= 1) {
+      loadBrands(initialBrand).then(() => {
+        if (brand.value) {
+          loadModels(brand.value, initialModel);
+        }
+      });
+    } else if (brand.value) {
+      loadModels(brand.value, initialModel);
+    }
+
+    brand.addEventListener('change', () => loadModels(brand.value));
+    addBrand?.addEventListener("click", quickAddBrand);
+    addModel?.addEventListener("click", quickAddModel);
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "print/_base.html" %}
+{% block content %}
+{% if request.session.ui_lang == 'ar' %}
+<style>
+  .report-spacer { height: 32mm !important; }
+  .page { direction: rtl; }
+  table, th, td { direction: rtl; }
+  th, td { text-align: right; }
+</style>
+{% else %}
+<style>
+  .report-spacer { height: 32mm !important; }
+</style>
+{% endif %}
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}تقرير المدفوعات{% else %}Payments Report{% endif %}</h2>
+</div>
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}الملخص{% else %}Summary{% endif %}</h2>
+  <table>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}إجمالي المدفوعات{% else %}Total Payments{% endif %}</th>
+      <td>{{ payments|length }}</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>{% if request.session.ui_lang == 'ar' %}المدفوعات{% else %}Payments{% endif %}</h2>
+  <table>
+    <tr>
+      <th>{% if request.session.ui_lang == 'ar' %}التاريخ{% else %}Date{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}الإيصال{% else %}Receipt{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}الحجز{% else %}Booking{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}الطريقة{% else %}Method{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+      <th class="right">{% if request.session.ui_lang == 'ar' %}المبلغ{% else %}Amount{% endif %}</th>
+      <th>{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</th>
+    </tr>
+    {% for p in payments %}
+      {% if forloop.counter0 == 10 or forloop.counter0|add:"-10"|divisibleby:"11" %}
+        </table>
+        <div class="page-break" aria-hidden="true"><div class="header-spacer report-spacer" aria-hidden="true"></div></div>
+        <table style="margin-top:18mm;">
+          <tr>
+            <th>{% if request.session.ui_lang == 'ar' %}التاريخ{% else %}Date{% endif %}</th>
+            <th>{% if request.session.ui_lang == 'ar' %}الإيصال{% else %}Receipt{% endif %}</th>
+            <th>{% if request.session.ui_lang == 'ar' %}الحجز{% else %}Booking{% endif %}</th>
+            <th>{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</th>
+            <th>{% if request.session.ui_lang == 'ar' %}الطريقة{% else %}Method{% endif %}</th>
+            <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+            <th class="right">{% if request.session.ui_lang == 'ar' %}المبلغ{% else %}Amount{% endif %}</th>
+            <th>{% if request.session.ui_lang == 'ar' %}ملاحظات{% else %}Notes{% endif %}</th>
+          </tr>
+      {% endif %}
+      <tr>
+        <td>{{ p.payment_date }}</td>
+        <td>{{ p.receipt_number }}</td>
+        <td>{{ p.booking_id }}</td>
+        <td>{{ p.booking.customer.name }}</td>
+        <td>{{ p.method }}</td>
+        <td>{{ p.status }}</td>
+        <td class="right">{{ p.currency_code|default:business.currency_code|default:"OMR" }} {{ p.amount }}</td>
+        <td>{{ p.notes }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="8" class="muted">{% if request.session.ui_lang == 'ar' %}لا توجد مدفوعات.{% else %}No payments.{% endif %}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

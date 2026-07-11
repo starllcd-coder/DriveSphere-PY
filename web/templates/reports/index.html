@@ -1,0 +1,270 @@
+{% extends "base/_app_shell.html" %}
+{% load permissions_tags %}
+{% block heading %}{% if request.session.ui_lang == 'ar' %}التقارير{% else %}Reports{% endif %}{% endblock %}
+{% block page_subtitle %}{% if request.session.ui_lang == 'ar' %}لمحات الأداء حسب الفترة والفئة{% else %}Performance snapshots by period and category{% endif %}{% endblock %}
+
+{% block content %}
+<div class="ds-page" id="ds-reports"
+  data-can-overview="{% if request.user|has_perm:'reports.view' %}1{% else %}0{% endif %}"
+  data-can-revenue="{% if request.user|has_perm:'reports.view' %}1{% else %}0{% endif %}"
+  data-can-financial="{% if request.user|has_perm:'reports.view_financial' or request.user|has_perm:'reports.view' %}1{% else %}0{% endif %}"
+  data-can-fleet="{% if request.user|has_perm:'reports.view' %}1{% else %}0{% endif %}"
+  data-can-maintenance="{% if request.user|has_perm:'reports.view_maintenance' or request.user|has_perm:'reports.view' %}1{% else %}0{% endif %}"
+  data-can-customers="{% if request.user|has_perm:'reports.view_limited' or request.user|has_perm:'reports.view' %}1{% else %}0{% endif %}">
+
+  <!-- Period Filters -->
+  <div class="ds-filters">
+    <div>
+      <input class="ds-input" type="date" name="from" placeholder="{% if request.session.ui_lang == 'ar' %}من{% else %}From{% endif %}">
+    </div>
+    <div>
+      <input class="ds-input" type="date" name="to" placeholder="{% if request.session.ui_lang == 'ar' %}إلى{% else %}To{% endif %}">
+    </div>
+    <div class="ds-period" style="grid-column: span 2;">
+      <button class="ds-btn ds-btn--ghost is-active" data-period="today">{% if request.session.ui_lang == 'ar' %}اليوم{% else %}Today{% endif %}</button>
+      <button class="ds-btn ds-btn--ghost" data-period="weekly">{% if request.session.ui_lang == 'ar' %}أسبوعي{% else %}Weekly{% endif %}</button>
+      <button class="ds-btn ds-btn--ghost" data-period="monthly">{% if request.session.ui_lang == 'ar' %}شهري{% else %}Monthly{% endif %}</button>
+    </div>
+    <div style="display:flex; gap:8px; justify-content:flex-end;">
+      <button class="ds-btn ds-btn--ghost" type="button" data-filter-reset>{% if request.session.ui_lang == 'ar' %}إعادة تعيين{% else %}Reset{% endif %}</button>
+      <button class="ds-btn" type="button" data-filter-apply>{% if request.session.ui_lang == 'ar' %}تطبيق{% else %}Apply{% endif %}</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="ds-tabs">
+    {% if request.user|has_perm:'reports.view' %}
+      <button class="ds-tab is-active" data-tab="overview">{% if request.session.ui_lang == 'ar' %}نظرة عامة{% else %}Overview{% endif %}</button>
+      <button class="ds-tab" data-tab="revenue">{% if request.session.ui_lang == 'ar' %}الإيرادات{% else %}Revenue{% endif %}</button>
+      <button class="ds-tab" data-tab="fleet">{% if request.session.ui_lang == 'ar' %}الأسطول{% else %}Fleet{% endif %}</button>
+    {% endif %}
+    {% if request.user|has_perm:'reports.view_financial' or request.user|has_perm:'reports.view' %}
+      <button class="ds-tab{% if not request.user|has_perm:'reports.view' %} is-active{% endif %}" data-tab="financial">{% if request.session.ui_lang == 'ar' %}المالية{% else %}Financial{% endif %}</button>
+    {% endif %}
+    {% if request.user|has_perm:'reports.view_maintenance' or request.user|has_perm:'reports.view' %}
+      <button class="ds-tab{% if not request.user|has_perm:'reports.view' and not request.user|has_perm:'reports.view_financial' %} is-active{% endif %}" data-tab="maintenance">{% if request.session.ui_lang == 'ar' %}الصيانة{% else %}Maintenance{% endif %}</button>
+    {% endif %}
+    {% if request.user|has_perm:'reports.view_limited' or request.user|has_perm:'reports.view' %}
+      <button class="ds-tab{% if not request.user|has_perm:'reports.view' and not request.user|has_perm:'reports.view_financial' and not request.user|has_perm:'reports.view_maintenance' %} is-active{% endif %}" data-tab="customers">{% if request.session.ui_lang == 'ar' %}العملاء{% else %}Customers{% endif %}</button>
+    {% endif %}
+  </div>
+
+  <div class="ds-tabPanels">
+
+    <!-- Overview -->
+    {% if request.user|has_perm:'reports.view' %}
+    <section class="ds-tabPanel is-active" data-panel="overview">
+      <div class="ds-card ds-card--panel">
+        <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}نظرة عامة{% else %}Overview{% endif %}</div>
+          <a class="ds-btn ds-btn--small ds-print-link" href="/print/reports/overview/" data-print-base="/print/reports/overview/" target="_blank">{% if request.session.ui_lang == 'ar' %}طباعة{% else %}Print{% endif %}</a>
+          <a class="ds-btn ds-btn--small ds-pdf-link" href="/print/reports/overview/" data-pdf-base="/print/reports/overview/" target="_blank">{% if request.session.ui_lang == 'ar' %}PDF{% else %}PDF{% endif %}</a>
+        </div>
+
+        <div class="ds-card__body">
+          <table class="ds-table" style="margin-bottom:12px;">
+            <thead>
+                <tr>
+                <th>{% if request.session.ui_lang == 'ar' %}الفترة{% else %}Period{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}عملاء جدد{% else %}New Customers{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}إجمالي العملاء{% else %}Total Customers{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}الإيرادات{% else %}Revenue{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}الرحلات{% else %}Trips{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}المركبات النشطة{% else %}Active Vehicles{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}الرحلات المكتملة{% else %}Completed Trips{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}الرحلات الملغاة{% else %}Cancelled Trips{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}نسبة التحصيل{% else %}Collection Rate{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}الرصيد المعلق{% else %}Pending Balance{% endif %}</th>
+                <th>{% if request.session.ui_lang == 'ar' %}استغلال الأسطول{% else %}Fleet Utilization{% endif %}</th>
+              </tr>
+            </thead>
+            <tbody id="r-overview-table"><tr><td colspan="11" class="ds-empty">Loading…</td></tr></tbody>
+          </table>
+
+          <div id="r-overview-kpis"></div>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- Revenue -->
+    {% if request.user|has_perm:'reports.view' %}
+    <section class="ds-tabPanel" data-panel="revenue">
+      <div class="ds-card ds-card--panel">
+          <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}الإيرادات{% else %}Revenue{% endif %}</div>
+          <a class="ds-btn ds-btn--small ds-print-link" href="/print/reports/revenue/" data-print-base="/print/reports/revenue/" target="_blank">{% if request.session.ui_lang == 'ar' %}طباعة{% else %}Print{% endif %}</a>
+          <a class="ds-btn ds-btn--small ds-pdf-link" href="/print/reports/revenue/" data-pdf-base="/print/reports/revenue/" target="_blank">{% if request.session.ui_lang == 'ar' %}PDF{% else %}PDF{% endif %}</a>
+        </div>
+        <div class="ds-card__body">
+          <div class="ds-reportTableWrap">
+            <table class="ds-table">
+              <thead>
+                <tr>
+                  <th>{% if request.session.ui_lang == 'ar' %}التاريخ{% else %}Date{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}معرف الرحلة{% else %}Trip ID{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}العميل{% else %}Customer{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}مسافة الرحلة{% else %}Trip Distance{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الأجرة{% else %}Fare{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الضريبة{% else %}Tax{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الخصم{% else %}Discount{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}المبلغ الإجمالي{% else %}Total Amount{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}طريقة الدفع{% else %}Payment Method{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+                </tr>
+              </thead>
+              <tbody id="r-revenue-table"><tr><td colspan="11" class="ds-empty">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="ds-reportChartWrap">
+            <canvas id="chart-revenue"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- Financial -->
+    {% if request.user|has_perm:'reports.view_financial' or request.user|has_perm:'reports.view' %}
+    <section class="ds-tabPanel{% if not request.user|has_perm:'reports.view' %} is-active{% endif %}" data-panel="financial">
+      <div class="ds-card ds-card--panel">
+          <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}المالية{% else %}Financial{% endif %}</div>
+          <a class="ds-btn ds-btn--small ds-print-link" href="/print/reports/financial/" data-print-base="/print/reports/financial/" target="_blank">{% if request.session.ui_lang == 'ar' %}طباعة{% else %}Print{% endif %}</a>
+          <a class="ds-btn ds-btn--small ds-pdf-link" href="/print/reports/financial/" data-pdf-base="/print/reports/financial/" target="_blank">{% if request.session.ui_lang == 'ar' %}PDF{% else %}PDF{% endif %}</a>
+        </div>
+        <div class="ds-card__body">
+          <div class="ds-reportTableWrap">
+            <table class="ds-table">
+              <thead>
+                <tr>
+                  <th>{% if request.session.ui_lang == 'ar' %}التاريخ{% else %}Date{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الإيرادات{% else %}Revenue{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}تكلفة الصيانة{% else %}Maintenance Cost{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}تكلفة الوقود{% else %}Fuel Cost{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}مصاريف أخرى{% else %}Other Expenses{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}إجمالي المصاريف{% else %}Total Expenses{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}صافي الربح{% else %}Net Profit{% endif %}</th>
+                </tr>
+              </thead>
+              <tbody id="r-financial-table"><tr><td colspan="7" class="ds-empty">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="ds-reportChartWrap">
+            <canvas id="chart-financial"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- Fleet -->
+    {% if request.user|has_perm:'reports.view' %}
+    <section class="ds-tabPanel" data-panel="fleet">
+      <div class="ds-card ds-card--panel">
+          <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}استخدام الأسطول{% else %}Fleet Utilization{% endif %}</div>
+          <a class="ds-btn ds-btn--small ds-print-link" href="/print/reports/fleet/" data-print-base="/print/reports/fleet/" target="_blank">{% if request.session.ui_lang == 'ar' %}طباعة{% else %}Print{% endif %}</a>
+          <a class="ds-btn ds-btn--small ds-pdf-link" href="/print/reports/fleet/" data-pdf-base="/print/reports/fleet/" target="_blank">{% if request.session.ui_lang == 'ar' %}PDF{% else %}PDF{% endif %}</a>
+        </div>
+        <div class="ds-card__body">
+          <div class="ds-reportTableWrap">
+            <table class="ds-table">
+              <thead>
+                <tr>
+                  <th>{% if request.session.ui_lang == 'ar' %}معرف المركبة{% else %}Vehicle ID{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}اسم المركبة{% else %}Vehicle Name{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الرحلات المكتملة{% else %}Trips Completed{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}المسافة المقطوعة{% else %}Distance Driven{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الإيرادات{% else %}Revenue Generated{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}آخر خدمة{% else %}Last Service{% endif %}</th>
+                </tr>
+              </thead>
+              <tbody id="r-fleet-table"><tr><td colspan="7" class="ds-empty">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="ds-reportChartWrap">
+            <canvas id="chart-fleet"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- Maintenance -->
+    {% if request.user|has_perm:'reports.view_maintenance' or request.user|has_perm:'reports.view' %}
+    <section class="ds-tabPanel{% if not request.user|has_perm:'reports.view' and not request.user|has_perm:'reports.view_financial' %} is-active{% endif %}" data-panel="maintenance">
+      <div class="ds-card ds-card--panel">
+          <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}تكلفة الصيانة{% else %}Maintenance Cost{% endif %}</div>
+          <a class="ds-btn ds-btn--small ds-print-link" href="/print/reports/maintenance/" data-print-base="/print/reports/maintenance/" target="_blank">{% if request.session.ui_lang == 'ar' %}طباعة{% else %}Print{% endif %}</a>
+          <a class="ds-btn ds-btn--small ds-pdf-link" href="/print/reports/maintenance/" data-pdf-base="/print/reports/maintenance/" target="_blank">{% if request.session.ui_lang == 'ar' %}PDF{% else %}PDF{% endif %}</a>
+        </div>
+        <div class="ds-card__body">
+          <div class="ds-reportTableWrap">
+            <table class="ds-table">
+              <thead>
+                <tr>
+                  <th>{% if request.session.ui_lang == 'ar' %}التاريخ{% else %}Date{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}المركبة{% else %}Vehicle{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}نوع الخدمة{% else %}Service Type{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الوصف{% else %}Description{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}التكلفة{% else %}Cost{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الميكانيكي{% else %}Mechanic{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+                </tr>
+              </thead>
+              <tbody id="r-maintenance-table"><tr><td colspan="7" class="ds-empty">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="ds-reportChartWrap">
+            <canvas id="chart-maintenance"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- Customers -->
+    {% if request.user|has_perm:'reports.view_limited' or request.user|has_perm:'reports.view' %}
+    <section class="ds-tabPanel{% if not request.user|has_perm:'reports.view' and not request.user|has_perm:'reports.view_financial' and not request.user|has_perm:'reports.view_maintenance' %} is-active{% endif %}" data-panel="customers">
+      <div class="ds-card ds-card--panel">
+          <div class="ds-card__head">
+          <div class="ds-card__title">{% if request.session.ui_lang == 'ar' %}نمو العملاء{% else %}Customers Growth{% endif %}</div>
+          <a class="ds-btn ds-btn--small ds-print-link" href="/print/reports/customers/" data-print-base="/print/reports/customers/" target="_blank">{% if request.session.ui_lang == 'ar' %}طباعة{% else %}Print{% endif %}</a>
+          <a class="ds-btn ds-btn--small ds-pdf-link" href="/print/reports/customers/" data-pdf-base="/print/reports/customers/" target="_blank">{% if request.session.ui_lang == 'ar' %}PDF{% else %}PDF{% endif %}</a>
+        </div>
+        <div class="ds-card__body">
+          <div class="ds-reportTableWrap">
+            <table class="ds-table">
+              <thead>
+                <tr>
+                  <th>{% if request.session.ui_lang == 'ar' %}معرف العميل{% else %}Customer ID{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}إجمالي الرحلات{% else %}Total Trips{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}إجمالي الإنفاق{% else %}Total Spent{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الرحلة الأخيرة{% else %}Last Trip{% endif %}</th>
+                  <th>{% if request.session.ui_lang == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+                </tr>
+              </thead>
+              <tbody id="r-customers-table"><tr><td colspan="6" class="ds-empty">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="ds-reportChartWrap">
+            <canvas id="chart-customers"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/static/js/reports_charts.js" defer></script>
+{% endblock %}
