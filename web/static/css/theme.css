@@ -1549,3 +1549,12 @@ table.ds-table tbody tr.is-selected td{
   border-color: rgba(220,38,38,0.35);
   background: linear-gradient(180deg, rgba(254,226,226,0.98), rgba(254,242,242,0.98));
 }
+
+/* Ensure topbar dropdown panels remain hidden until opened */
+.ds-topbar__panel {
+  display: none;
+}
+
+.ds-topbar__dropdown.is-open .ds-topbar__panel {
+  display: block;
+}
