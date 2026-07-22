@@ -1,4 +1,11 @@
 (function () {
+  document.querySelectorAll("[data-period]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-period]").forEach(b => b.classList.remove("is-active"));
+      btn.classList.add("is-active");
+    });
+  });
+
   document.querySelectorAll(".ds-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
       const target = tab.getAttribute("data-tab");
