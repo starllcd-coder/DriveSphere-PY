@@ -31,3 +31,5 @@ Use Docker Compose and deployment docs:
 - API auth flow: `docs/api/auth-flow.md`
 - Endpoint reference: `docs/api/endpoints.md`
 - Contribution process: `CONTRIBUTING.md`
+
+Railway static assets refresh: 2026-07-23T02:20:51
