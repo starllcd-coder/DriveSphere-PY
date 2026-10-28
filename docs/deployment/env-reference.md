@@ -9,6 +9,7 @@
 
 ## Database
 
+- `DATABASE_URL`: optional PostgreSQL URL; when set, it takes precedence over the `DB_*` settings below
 - `DB_ENGINE`
 - `DB_NAME`
 - `DB_USER`
@@ -42,6 +43,7 @@
 ## Sensitive Data Encryption
 
 - `DATA_ENCRYPTION_KEY`: used to encrypt sensitive stored configuration fields
+- `CENTRAL_CONNECTOR_SECRET`: shared secret for the Central Platform connector; required in production
 
 ## OTP and Messaging
 

@@ -20,6 +20,5 @@ COPY web /app/web
 WORKDIR /app/web
 
 CMD python manage.py migrate --settings=config.settings.prod && \
-    python manage.py create_demo_admin --settings=config.settings.prod && \
     python manage.py collectstatic --noinput --settings=config.settings.prod && \
     gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
