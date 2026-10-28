@@ -1,3 +1,10 @@
+New Setup
+py -3.12 -m venv --clear web\.venv
+.\web\.venv\Scripts\python.exe -m pip install -r web\requirements\dev.txt
+.\web\.venv\Scripts\python.exe web\manage.py migrate
+.\web\.venv\Scripts\python.exe web\manage.py runserver
+
+
 DriveSphere - Complete Setup, Run, Build Commands (Windows PowerShell)
 =====================================================================
 
